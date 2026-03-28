@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使い方ガイド｜デジタルエンディングノート｜アスイロ・ラボ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#f0f4f8;color:#333;line-height:1.8}
+/* 印刷 */
+@media print{
+  body{background:#fff;font-size:10pt}
+  .no-print{display:none!important}
+  .page-break{page-break-before:always}
+  .card{box-shadow:none!important;border:1pt solid #ddd!important}
+  header{background:#1a1a2e!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .section-header{background:#0f3460!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .step-num{background:#0f3460!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .warn-box{background:#fff8e1!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ok-box{background:#f0fff4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tip-box{background:#f0f4ff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  footer{display:block!important}
+  @page{margin:12mm}
+}
+/* ヘッダー */
+header{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;padding:32px 24px;text-align:center}
+.brand{font-size:11px;letter-spacing:3px;opacity:0.7;margin-bottom:6px}
+header h1{font-size:22px;font-weight:700;margin-bottom:6px}
+header p{font-size:13px;opacity:0.8}
+.print-btn{display:inline-block;margin-top:16px;padding:8px 20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:6px;font-size:13px;cursor:pointer;text-decoration:none}
+.print-btn:hover{background:rgba(255,255,255,0.25)}
+
+/* 目次 */
+.toc{max-width:760px;margin:24px auto;padding:0 16px}
+.toc-box{background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.toc-box h2{font-size:14px;color:#0f3460;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8ecf0}
+.toc-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:500px){.toc-list{grid-template-columns:1fr}}
+.toc-list a{font-size:13px;color:#0f3460;text-decoration:none;display:flex;align-items:center;gap:6px;padding:4px 0}
+.toc-list a:hover{text-decoration:underline}
+
+/* メインコンテンツ */
+main{max-width:760px;margin:0 auto;padding:0 16px 40px}
+
+.section{margin-bottom:32px}
+.section-header{background:#0f3460;color:#fff;border-radius:10px 10px 0 0;padding:12px 20px;display:flex;align-items:center;gap:10px}
+.section-header .icon{font-size:20px}
+.section-header h2{font-size:15px;font-weight:600}
+.section-body{background:#fff;border-radius:0 0 10px 10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+
+/* カード */
+.card{border:1px solid #e8ecf0;border-radius:8px;padding:16px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:#0f3460;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* ステップ */
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start}
+.step-num{background:#0f3460;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-body{flex:1}
+.step-body strong{display:block;font-size:13px;margin-bottom:3px;color:#1a1a2e}
+.step-body p{font-size:13px;color:#555}
+
+/* ボックス */
+.warn-box{background:#fff8e1;border:1px solid #ffd54f;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;color:#856404;line-height:1.7}
+.warn-box strong{display:block;margin-bottom:4px}
+.ok-box{background:#f0fff4;border:1px solid #86efac;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;color:#166534;line-height:1.7}
+.ok-box strong{display:block;margin-bottom:4px}
+.tip-box{background:#f0f4ff;border:1px solid #b0c4de;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;color:#0f3460;line-height:1.7}
+.tip-box strong{display:block;margin-bottom:4px}
+
+/* タブ一覧 */
+.tab-list{list-style:none}
+.tab-item{border-bottom:1px solid #f0f0f0;padding:10px 0;display:flex;gap:12px;align-items:flex-start;font-size:13px}
+.tab-item:last-child{border-bottom:none}
+.tab-label{background:#0f3460;color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.tab-desc{color:#555;line-height:1.7}
+.tab-desc strong{color:#333;display:block;margin-bottom:2px}
+
+/* 引き継ぎカード */
+.handover-box{border:2px solid #0f3460;border-radius:10px;padding:20px;margin:12px 0;position:relative}
+.handover-box .handover-label{position:absolute;top:-11px;left:16px;background:#0f3460;color:#fff;font-size:11px;padding:2px 10px;border-radius:4px;font-weight:600}
+.handover-box p{font-size:13px;color:#444;line-height:1.8}
+
+/* フッター */
+footer{background:#1a1a2e;color:rgba(255,255,255,0.5);text-align:center;padding:16px;font-size:11px;line-height:1.8;margin-top:40px}
+footer span{color:rgba(255,255,255,0.8);font-weight:600;letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="brand">ASUIRO LAB</p>
+  <h1>📓 デジタルエンディングノート<br>使い方ガイド</h1>
+  <p>安心してご利用いただくために、このガイドをお読みください</p>
+  <a class="print-btn no-print" onclick="window.print()">🖨️ 印刷する</a>
+</header>
+
+<!-- 目次 -->
+<div class="toc no-print">
+  <div class="toc-box">
+    <h2>📋 目次</h2>
+    <ul class="toc-list">
+      <li><a href="#s1">① はじめに・基本の流れ</a></li>
+      <li><a href="#s2">② マスターパスワードの設定と管理</a></li>
+      <li><a href="#s3">③ セキュリティ・暗号化について</a></li>
+      <li><a href="#s4">④ 各タブの入力内容</a></li>
+      <li><a href="#s5">⑤ 保存・エクスポート・インポート</a></li>
+      <li><a href="#s6">⑥ バックアップ方法</a></li>
+      <li><a href="#s7">⑦ 家族への引き継ぎ方法</a></li>
+    </ul>
+  </div>
+</div>
+
+<main>
+
+  <!-- ① はじめに -->
+  <div class="section" id="s1">
+    <div class="section-header"><span class="icon">👋</span><h2>① はじめに・基本の流れ</h2></div>
+    <div class="section-body">
+      <p style="font-size:13px;color:#555;margin-bottom:16px">デジタルエンディングノートは、大切な情報をまとめて安全に保管するためのツールです。まず全体の流れをご確認ください。</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>利用規約に同意する</strong><p>起動するたびに利用規約が表示されます。内容をご確認のうえ「同意して始める」を押してください。</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>マスターパスワードを決める</strong><p>初回はお好きなパスワードを入力して「開く」を押すだけで始められます。このパスワードが全データの鍵になります。</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>各タブに情報を入力する</strong><p>8つのタブに分かれています。一度にすべて入力しなくても大丈夫です。わかる項目から少しずつ入力しましょう。</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>こまめに保存する</strong><p>「💾 保存」ボタンで端末に保存されます。更新コメントを残しておくと、いつ何を変えたかわかって便利です。</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><strong>エクスポートしてバックアップする</strong><p>「📤 エクスポート」で暗号化ファイルを書き出し、USBや信頼できる場所に保管しておきましょう。</p></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body"><strong>マスターパスワードを家族に伝えておく</strong><p>いざという時に家族が開けるよう、パスワードは安全な方法で伝えておいてください。</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② マスターパスワード -->
+  <div class="section page-break" id="s2">
+    <div class="section-header"><span class="icon">🔑</span><h2>② マスターパスワードの設定と管理</h2></div>
+    <div class="section-body">
+      <div class="card">
+        <div class="card-title">🔐 マスターパスワードとは</div>
+        <p style="font-size:13px;color:#555">ノート全体を守る「鍵」です。このパスワードがないとデータを開くことができません。また、パスワード自体はどこにも保存されないため、紛失した場合はデータの復元ができません。</p>
+      </div>
+      <div class="card">
+        <div class="card-title">✅ 安全なパスワードの作り方</div>
+        <ul style="font-size:13px;color:#555;padding-left:18px;line-height:2">
+          <li>8文字以上で設定する</li>
+          <li>英字（大文字・小文字）・数字・記号を組み合わせる</li>
+          <li>生年月日・電話番号など推測されやすいものは避ける</li>
+          <li>他のサービスと同じパスワードは使わない</li>
+        </ul>
+        <p style="font-size:12px;color:#888;margin-top:8px">例：Hana2024!_endo（花という意味＋年＋記号）</p>
+      </div>
+      <div class="warn-box">
+        <strong>⚠️ 絶対に忘れないための対策</strong>
+        パスワードはこのツール内には保存されません。忘れてしまうと、保存したデータはすべて読み取れなくなります。以下のいずれかの方法でパスワードを管理してください。
+      </div>
+      <div class="card">
+        <div class="card-title">📋 パスワードの保管方法（おすすめ）</div>
+        <div class="step">
+          <div class="step-num">A</div>
+          <div class="step-body"><strong>紙に書いて封筒に保管（最も確実）</strong><p>「エンディングノートのパスワード」と書いた封筒に入れ、遺言書や権利証など大切な書類と一緒に保管してください。</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">B</div>
+          <div class="step-body"><strong>信頼できる家族に口頭で伝えておく</strong><p>配偶者・子どもなど、いざという時に対応できる人に伝えておきましょう。</p></div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>💡 パスワードを変更したい場合</strong>
+        ノートを開いた状態で、画面右上の「🔑 PW変更」ボタンを押してください。現在のパスワードを確認した上で、新しいパスワードに変更・再暗号化されます。<br>
+        <span style="color:#c0392b;font-weight:600">⚠️ 変更後は必ず再エクスポートしてください。</span>古いバックアップファイルは古いパスワードでしか開けないため、変更前のファイルは使えなくなります。
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ セキュリティ -->
+  <div class="section" id="s3">
+    <div class="section-header"><span class="icon">🛡️</span><h2>③ セキュリティ・暗号化について</h2></div>
+    <div class="section-body">
+      <div class="card">
+        <div class="card-title">🔒 データはどのように守られているか</div>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>AES-256暗号化</strong><p>入力したデータはすべて「AES-256」という世界標準の暗号方式で保護されます。銀行や政府機関でも使われている強力な暗号化です。</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>端末内にのみ保存</strong><p>データはインターネット上のサーバーには送信されません。すべてお使いの端末（ブラウザ）の中だけに保存されます。</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>パスワード欄のアスタリスク表示</strong><p>銀行のPINやサービスのパスワードは「●●●●」で隠して表示されます。👁️ボタンで一時的に確認、📋ボタンでコピーできます。</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><strong>自動ロック機能</strong><p>10分間操作がない場合、自動的にロックがかかります。その場でその場を離れる際も安心です。</p></div>
+        </div>
+      </div>
+      <div class="warn-box">
+        <strong>⚠️ 注意してほしいこと</strong>
+        端末自体がウイルスに感染していたり、悪意のあるブラウザ拡張機能が入っている場合は、画面上の情報が見られてしまう可能性があります。信頼できる端末・ブラウザでご利用ください。
+      </div>
+      <div class="ok-box">
+        <strong>✅ このツールで安全に保管できる情報</strong>
+        銀行口座のPIN・ネットバンクのパスワード・クレジットカード情報・SNSのパスワードなど、通常のメモやスプレッドシートでは危険な情報も、暗号化によって安全に保管できます。ただし、エクスポートファイルの管理と、マスターパスワードの管理は必ずご自身の責任で行ってください。
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 各タブ -->
+  <div class="section page-break" id="s4">
+    <div class="section-header"><span class="icon">📂</span><h2>④ 各タブの入力内容</h2></div>
+    <div class="section-body">
+      <p style="font-size:13px;color:#555;margin-bottom:14px">8つのタブに分かれています。すべて入力しなくても構いません。わかるところから少しずつ進めてください。</p>
+      <ul class="tab-list">
+        <li class="tab-item">
+          <span class="tab-label">👤 基本情報</span>
+          <div class="tab-desc"><strong>氏名・生年月日・住所・本籍・戸籍の履歴・勤務先など</strong>相続手続きや各種届け出に必要な基本情報です。筆頭者・本籍地は戸籍謄本を確認しながら入力すると確実です。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">👨‍👩‍👧 家族</span>
+          <div class="tab-desc"><strong>家族の連絡先・住所・その他の重要な連絡先</strong>緊急時に連絡が必要な人を登録してください。弁護士・税理士・ケアマネージャーなども登録できます。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">🏦 財産・資産</span>
+          <div class="tab-desc"><strong>不動産・証券口座・ローン・保険・貴重品の場所</strong>相続時に「知らなかった」資産や負債がないよう、できる限り網羅してください。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">💳 口座・カード</span>
+          <div class="tab-desc"><strong>銀行口座・クレジットカード・サブスクリプション</strong>機密性の高い情報です。死亡後も引き落としが続かないよう、サブスクは特に漏れなく記入してください。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">📱 SNS</span>
+          <div class="tab-desc"><strong>SNS・オンラインアカウントのログイン情報と死後の対応希望</strong>削除・追悼アカウント化など、希望を明記しておくと家族が迷わず対応できます。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">🏥 医療・介護</span>
+          <div class="tab-desc"><strong>健康保険・介護保険・障害者手帳・かかりつけ医・延命治療の希望</strong>意識がない状態でも家族が適切に対応できるよう、延命治療・臓器提供についての意思は必ず記入してください。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">⛩️ 葬儀・お墓</span>
+          <div class="tab-desc"><strong>葬儀の形式・宗派・お墓の希望</strong>「家族葬がいい」「散骨してほしい」など、希望を残しておくことで家族の負担を減らせます。</div>
+        </li>
+        <li class="tab-item">
+          <span class="tab-label">💌 メッセージ</span>
+          <div class="tab-desc"><strong>家族へのメッセージ・遺産分配の希望・デジタルデータの処理</strong>法的効力はありませんが、あなたの言葉で気持ちや感謝を伝えることができます。何度でも書き直せます。</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ⑤ 保存・エクスポート・インポート -->
+  <div class="section" id="s5">
+    <div class="section-header"><span class="icon">💾</span><h2>⑤ 保存・エクスポート・インポートの手順</h2></div>
+    <div class="section-body">
+      <div class="card">
+        <div class="card-title">💾 保存（ブラウザに保存）</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>「💾 保存」ボタンを押す</strong><p>画面右上またはフッターのボタンを押してください。</p></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>更新コメントを入力する（任意）</strong><p>「保険情報を追加」「住所を更新」など一言残しておくと、更新履歴で変更内容が確認できます。</p></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>「保存する」を押す</strong><p>暗号化されてブラウザ内に保存されます。「保存しました ✅」が表示されれば完了です。</p></div></div>
+        </div>
+        <div class="warn-box" style="margin-top:8px">
+          <strong>⚠️ ブラウザのデータを削除すると消えます</strong>
+          「ブラウザの履歴・キャッシュを削除」するとデータが消える場合があります。必ずエクスポートでバックアップを取ってください。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📤 エクスポート（ファイルに書き出す）</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>「📤 エクスポート」ボタンを押す</strong><p>画面右上のボタンを押してください。</p></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>JSONファイルがダウンロードされる</strong><p>「ending_note_2025-01-01.json」のような名前のファイルが保存されます。中身は暗号化されているため、そのままでは読めません。</p></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>安全な場所に保管する</strong><p>USBメモリ・信頼できるクラウドストレージなどに保存してください。（次のセクション参照）</p></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📂 インポート（ファイルから読み込む）</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>ロック画面を開く</strong><p>アプリを起動してロック画面を表示します。</p></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>パスワードを入力する</strong><p>エクスポート時に使っていたマスターパスワードを入力してください。</p></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>「📂 ファイルを選択してインポート」を押す</strong><p>保存しておいたJSONファイルを選択すると、データが読み込まれます。</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤-2 より安全な使い方 -->
+  <div class="section" id="s5b">
+    <div class="section-header"><span class="icon">🔒</span><h2>⑤-2 より安全な使い方（推奨）</h2></div>
+    <div class="section-body">
+      <p style="font-size:13px;color:#555;margin-bottom:14px">ブラウザのキャッシュ（一時保存データ）を削除すると、端末上のデータは消えます。一見不便に思えますが、<strong>「使う時だけ開いて、終わったら消す」</strong>という運用が最もセキュアです。</p>
+
+      <div class="card">
+        <div class="card-title">⚠️ 端末にデータを残しておくリスク</div>
+        <ul style="font-size:13px;color:#555;padding-left:18px;line-height:2">
+          <li>ウイルス・マルウェアに感染した場合、画面上の情報が盗まれる可能性がある</li>
+          <li>家族や他の人が同じ端末を使う場合、うっかり見られるリスクがある</li>
+          <li>端末の盗難・紛失時にデータが残ってしまう</li>
+        </ul>
+      </div>
+
+      <div class="ok-box">
+        <strong>✅ 最もセキュアな運用方法</strong>
+        暗号化されたバックアップファイル（USBまたはクラウド）とマスターパスワードを確実に管理した上で、端末上にはデータを残さないという運用が最も安全です。バックアップファイルはAES-256で暗号化されているため、ファイル自体が流出しても内容は読み取れません。
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 内容を更新する時の流れ</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>USBまたはクラウドからバックアップファイルを取り出す</strong></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>ノートを開いてインポートする</strong><p>ロック画面でパスワードを入力し、ファイルを選択して読み込む</p></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>内容を編集・更新する</strong></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>エクスポートして上書き保存する</strong><p>USBとクラウドの両方を最新ファイルに更新する</p></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><strong>ブラウザのキャッシュを削除してノートを閉じる</strong><p>端末上にデータを残さないことで、最もセキュアな状態になります</p></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👀 内容を確認するだけの時の流れ</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>バックアップファイルを取り出す</strong></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>インポートして開き、内容を確認する</strong></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>確認後、ブラウザを閉じる（またはキャッシュを削除する）</strong></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗑️ ブラウザのキャッシュ削除方法</div>
+        <ul style="font-size:13px;color:#555;padding-left:0;list-style:none;line-height:1">
+          <li style="padding:8px 0;border-bottom:1px solid #f0f0f0"><strong>Chrome：</strong>右上メニュー（⋮）→「その他のツール」→「閲覧履歴を消去」→「サイトのデータ」にチェックして削除</li>
+          <li style="padding:8px 0;border-bottom:1px solid #f0f0f0"><strong>Safari：</strong>「Safari」メニュー→「履歴を消去」→「すべての履歴」を選択して削除</li>
+          <li style="padding:8px 0;border-bottom:1px solid #f0f0f0"><strong>Firefox：</strong>右上メニュー（≡）→「設定」→「プライバシーとセキュリティ」→「データを消去」</li>
+          <li style="padding:8px 0"><strong>Edge：</strong>右上メニュー（⋯）→「設定」→「プライバシー、検索、サービス」→「閲覧データをクリア」</li>
+        </ul>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 利便性とセキュリティのバランスについて</strong>
+        毎回キャッシュを削除するのが面倒な場合は、ブラウザのキャッシュに保存したままでも、マスターパスワードなしでは開けないため一定の安全性は保たれています。ご自身の環境やリスク感覚に応じて使い方を選んでください。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ バックアップ -->
+  <div class="section page-break" id="s6">
+    <div class="section-header"><span class="icon">🗂️</span><h2>⑥ バックアップ方法（USB・クラウド）</h2></div>
+    <div class="section-body">
+      <p style="font-size:13px;color:#555;margin-bottom:14px">エクスポートしたファイルは暗号化されているため、たとえ他人に見られても内容はわかりません。安心して複数の場所に保管してください。</p>
+      <div class="card">
+        <div class="card-title">💾 USBメモリへの保存（推奨）</div>
+        <ul style="font-size:13px;color:#555;padding-left:18px;line-height:2">
+          <li>エクスポートしたJSONファイルをUSBメモリにコピーする</li>
+          <li>USBは実印・通帳などの貴重品と一緒に保管する</li>
+          <li>定期的（年1回程度）に内容を更新・上書き保存する</li>
+          <li>USBの保管場所を家族に伝えておく</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">☁️ クラウドストレージへの保存</div>
+        <ul style="font-size:13px;color:#555;padding-left:18px;line-height:2">
+          <li>Google ドライブ・iCloud・Dropboxなどに保存できます</li>
+          <li>暗号化済みのため、クラウドに保存しても内容は保護されています</li>
+          <li>ファイル名に日付を入れておくと管理しやすいです（例：ending_note_2025-04.json）</li>
+          <li>古いバックアップは削除するか、バージョンがわかるよう名前をつけて保管してください</li>
+        </ul>
+      </div>
+      <div class="tip-box">
+        <strong>💡 おすすめの管理サイクル</strong>
+        内容を更新したら → 保存 → エクスポート → USBとクラウドの両方に保存、という流れを習慣にしておくと安心です。年に1〜2回、内容の見直しもあわせて行いましょう。
+      </div>
+      <div class="warn-box">
+        <strong>⚠️ 同じパスワードを使い続ける場合</strong>
+        パスワードを変更した場合、古いバックアップファイルは古いパスワードでしか開けません。パスワード変更後は必ず新しいパスワードで再エクスポートしてください。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ 家族への引き継ぎ -->
+  <div class="section" id="s7">
+    <div class="section-header"><span class="icon">👨‍👩‍👧</span><h2>⑦ 家族への引き継ぎ方法（いざという時の開き方）</h2></div>
+    <div class="section-body">
+      <p style="font-size:13px;color:#555;margin-bottom:14px">このページは、切り取って家族に渡しておくことをおすすめします。</p>
+
+      <div class="handover-box">
+        <div class="handover-label">📋 ご家族の方へ</div>
+        <p style="margin-bottom:12px">このノートには、大切な人が残した情報が暗号化して保存されています。以下の手順で開くことができます。</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>ファイルを用意する</strong><p>USBメモリまたはクラウドストレージから「ending_note_〇〇〇〇.json」というファイルを取り出してください。</p></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>アプリを開く</strong><p>このガイドと一緒に保管されているHTMLファイル（ending_note.html）をダブルクリックして、ブラウザで開いてください。</p></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>利用規約に同意する</strong><p>利用規約が表示されたら内容を確認し「同意して始める」を押してください。</p></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>マスターパスワードを入力する</strong><p>別途伝えられているマスターパスワードを入力してください。パスワードがわからない場合は、遺品・封筒・公証役場などをご確認ください。</p></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><strong>ファイルをインポートする</strong><p>ロック画面下部の「📂 ファイルを選択してインポート」を押し、手順1で用意したファイルを選択してください。</p></div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><strong>内容を確認する</strong><p>各タブを切り替えながら、必要な情報をご確認ください。「🖨️ PDF出力」から印刷して手元に残すこともできます。</p></div></div>
+        </div>
+        <div class="warn-box" style="margin-top:12px">
+          <strong>⚠️ ご注意</strong>
+          このファイルには非常に重要な個人情報が含まれています。内容の取り扱いには十分ご注意ください。また、内容の無断転載・第三者への提供はお控えください。
+        </div>
+      </div>
+
+      <div class="ok-box" style="margin-top:16px">
+        <strong>✅ このガイドと一緒に保管しておくもの</strong>
+        □ デジタルエンディングノート本体（ending_note.html）<br>
+        □ エクスポートしたバックアップファイル（ending_note_〇〇〇〇.json）<br>
+        □ マスターパスワードを記したメモ（封筒に入れて保管）<br>
+        □ この使い方ガイド
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>ASUIRO LAB</span>　デジタルエンディングノート 使い方ガイド<br>
+  © <span id="yr"></span> アスイロ・ラボ　All Rights Reserved.　無断転載・二次配布禁止
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

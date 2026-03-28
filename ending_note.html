@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>デジタルエンディングノート｜アスイロ・ラボ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:var(--bg-page);color:var(--text-main);min-height:100vh;transition:background .3s,color .3s}
+
+/* ===== テーマ変数 ===== */
+/* A: テラコッタ×砂×深ブラウン */
+.theme-a{
+  --hd-bg:#4a3728;--hd-brand:#c4a882;--hd-text:#f5ede3;--hd-btn:rgba(255,255,255,0.12);--hd-btnborder:rgba(255,255,255,0.2);
+  --tab-bg:#f5ede3;--tab-border:#d4b896;--tab-active:#4a3728;--tab-inactive:#8a7060;
+  --bg-page:#faf5ef;--bg-card:#fff;--border-card:#d4b896;--border-inner:#eadac8;
+  --text-main:#3a2a1e;--text-label:#8a7060;--text-hint:#b09880;
+  --input-bg:#faf5ef;--input-border:#d4b896;
+  --accent:#4a3728;--accent-light:#f5ede3;
+  --warn-bg:#fff8e1;--warn-border:#ffd54f;--warn-text:#856404;
+  --footer-bg:#4a3728;--footer-text:rgba(245,237,227,0.5);--footer-brand:rgba(245,237,227,0.85);
+  --save-bg:#fff;--save-border:#d4b896;
+  --del-bg:#fee;--del-text:#c0392b;
+  --add-bg:#faf0e6;--add-border:#c4a882;--add-text:#4a3728;
+  --sub-border:#e8d8c4;--list-bg:#faf5ef;--list-border:#e8d8c4;
+  --pw-btn:#9a8070;--toast-bg:#5a7a50;
+}
+/* B: モスグリーン×アイボリー */
+.theme-b{
+  --hd-bg:#3d5240;--hd-brand:#a8c4a0;--hd-text:#f0f5ee;--hd-btn:rgba(255,255,255,0.12);--hd-btnborder:rgba(255,255,255,0.2);
+  --tab-bg:#f0f5ee;--tab-border:#c0d4b8;--tab-active:#3d5240;--tab-inactive:#7a9478;
+  --bg-page:#f7faf6;--bg-card:#fff;--border-card:#c0d4b8;--border-inner:#daecd4;
+  --text-main:#2a3c2c;--text-label:#7a9478;--text-hint:#9ab89a;
+  --input-bg:#f0f5ee;--input-border:#c0d4b8;
+  --accent:#3d5240;--accent-light:#f0f5ee;
+  --warn-bg:#fff8e1;--warn-border:#ffd54f;--warn-text:#856404;
+  --footer-bg:#3d5240;--footer-text:rgba(240,245,238,0.5);--footer-brand:rgba(240,245,238,0.85);
+  --save-bg:#fff;--save-border:#c0d4b8;
+  --del-bg:#fee;--del-text:#c0392b;
+  --add-bg:#edf5eb;--add-border:#a8c4a0;--add-text:#3d5240;
+  --sub-border:#d4e8cc;--list-bg:#f0f5ee;--list-border:#d4e8cc;
+  --pw-btn:#7a9478;--toast-bg:#3d5240;
+}
+/* C: グレージュ×くすみブルー */
+.theme-c{
+  --hd-bg:#3d4a52;--hd-brand:#a0b4be;--hd-text:#eef2f4;--hd-btn:rgba(255,255,255,0.12);--hd-btnborder:rgba(255,255,255,0.2);
+  --tab-bg:#eef2f4;--tab-border:#c0cfd4;--tab-active:#3d4a52;--tab-inactive:#7a9098;
+  --bg-page:#f5f8fa;--bg-card:#fff;--border-card:#c0cfd4;--border-inner:#dae4e8;
+  --text-main:#2a3840;--text-label:#7a9098;--text-hint:#9ab0b8;
+  --input-bg:#eef2f4;--input-border:#c0cfd4;
+  --accent:#3d4a52;--accent-light:#eef2f4;
+  --warn-bg:#fff8e1;--warn-border:#ffd54f;--warn-text:#856404;
+  --footer-bg:#3d4a52;--footer-text:rgba(238,242,244,0.5);--footer-brand:rgba(238,242,244,0.85);
+  --save-bg:#fff;--save-border:#c0cfd4;
+  --del-bg:#fee;--del-text:#c0392b;
+  --add-bg:#e8f0f4;--add-border:#a0b4be;--add-text:#3d4a52;
+  --sub-border:#d0dce4;--list-bg:#eef2f4;--list-border:#d0dce4;
+  --pw-btn:#7a9098;--toast-bg:#3d4a52;
+}
+
+#lockScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--hd-bg)}
+.lock-box{background:var(--bg-card);border-radius:16px;padding:40px;width:90%;max-width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.lock-box h1{font-size:20px;color:var(--text-main);margin-bottom:8px}
+.lock-box p{font-size:13px;color:var(--text-label);margin-bottom:24px}
+.lock-brand{font-size:11px;letter-spacing:3px;color:var(--text-hint);margin-bottom:12px}
+.input-wrap{position:relative;margin-bottom:16px}
+.input-wrap input{width:100%;padding:12px 44px 12px 16px;border:2px solid var(--input-border);border-radius:8px;font-size:15px;outline:none;background:var(--input-bg);color:var(--text-main);transition:.2s}
+.input-wrap input:focus{border-color:var(--accent)}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--pw-btn)}
+.btn-primary{width:100%;padding:12px;background:var(--accent);color:var(--hd-text);border:none;border-radius:8px;font-size:15px;cursor:pointer}
+.lock-note{font-size:11px;color:var(--text-hint);margin-top:16px;line-height:1.6}
+#lockError{display:none;color:#e74c3c;font-size:13px;margin-top:8px}
+#mainApp{display:none;min-height:100vh}
+.header{background:var(--hd-bg);color:var(--hd-text);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:8px}
+.header-left{display:flex;flex-direction:column;gap:1px}
+.header-brand{font-size:10px;letter-spacing:2px;color:var(--hd-brand)}
+.header-title{font-size:15px;font-weight:600;color:var(--hd-text)}
+.header-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.hbtn{padding:6px 12px;border:1px solid var(--hd-btnborder);background:var(--hd-btn);color:var(--hd-text);border-radius:6px;font-size:12px;cursor:pointer}
+.hbtn.danger{border-color:rgba(231,76,60,0.6);background:rgba(231,76,60,0.2)}
+/* テーマ切替ボタン */
+.theme-btns{display:flex;gap:5px;align-items:center;margin-right:4px}
+.tbtn{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);cursor:pointer;transition:.2s;flex-shrink:0}
+.tbtn.active{border-color:#fff;transform:scale(1.25)}
+.tbtn-a{background:#4a3728}
+.tbtn-b{background:#3d5240}
+.tbtn-c{background:#3d4a52}
+.tabs{background:var(--tab-bg);border-bottom:2px solid var(--tab-border);overflow-x:auto;white-space:nowrap;padding:0 8px}
+.tab{display:inline-block;padding:11px 14px;font-size:13px;color:var(--tab-inactive);cursor:pointer;border-bottom:3px solid transparent;transition:.2s;margin-bottom:-2px}
+.tab.active{color:var(--tab-active);border-bottom-color:var(--tab-active);font-weight:600}
+.content{max-width:800px;margin:0 auto;padding:20px 16px}
+.section{display:none}.section.active{display:block}
+.section-title{font-size:18px;font-weight:700;color:var(--text-main);margin-bottom:4px}
+.section-desc{font-size:13px;color:var(--text-hint);margin-bottom:20px}
+.card{background:var(--bg-card);border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid var(--border-card)}
+.card-title{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border-inner)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:var(--text-label);margin-bottom:5px;font-weight:500}
+.field input,.field textarea,.field select{width:100%;padding:9px 13px;border:2px solid var(--input-border);border-radius:8px;font-size:14px;outline:none;transition:.2s;background:var(--input-bg);color:var(--text-main);font-family:inherit}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);background:var(--bg-card)}
+.field textarea{resize:vertical;min-height:70px;line-height:1.6}
+.hint{font-size:11px;color:var(--text-hint);margin-top:4px;line-height:1.5;padding-left:2px}
+.pw-wrap{position:relative}.pw-wrap input{padding-right:78px}
+.pw-actions{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;gap:4px}
+.pw-actions button{background:none;border:none;cursor:pointer;font-size:15px;color:var(--pw-btn);padding:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:540px){.row2,.row3{grid-template-columns:1fr}}
+.list-item{background:var(--list-bg);border:1px solid var(--list-border);border-radius:8px;padding:14px;margin-bottom:10px;position:relative}
+.list-item .del-btn{position:absolute;top:10px;right:10px;background:var(--del-bg);border:none;color:var(--del-text);border-radius:4px;padding:2px 8px;font-size:12px;cursor:pointer}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;background:var(--add-bg);color:var(--add-text);border:2px dashed var(--add-border);border-radius:8px;font-size:13px;cursor:pointer;width:100%;margin-top:4px}
+.sub-section{margin-top:14px;padding-top:14px;border-top:1px dashed var(--sub-border)}
+.sub-title{font-size:13px;font-weight:600;color:var(--text-label);margin-bottom:10px}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--save-bg);border-top:1px solid var(--border-card);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;z-index:50;gap:10px}
+.save-bar span{font-size:12px;color:var(--text-hint);flex-shrink:0}
+.save-btn{padding:9px 24px;background:var(--accent);color:var(--hd-text);border:none;border-radius:8px;font-size:14px;cursor:pointer;white-space:nowrap}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--warn-text);line-height:1.6}
+.import-area{border:2px dashed var(--add-border);border-radius:8px;padding:12px;text-align:center;cursor:pointer;background:var(--input-bg);display:block;color:var(--text-label);font-size:13px}
+input[type=file]{display:none}
+.toast{position:fixed;top:76px;right:16px;background:var(--toast-bg);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;display:none}
+.toast.error{background:#e74c3c}
+.ver-item{padding:10px 14px;border-bottom:1px solid var(--border-inner);font-size:13px}
+.ver-item:last-child{border-bottom:none}
+.ver-date{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:2px}
+.ver-comment{color:var(--text-main)}
+.ver-no-comment{color:var(--text-hint);font-style:italic}
+/* モーダル共通 */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+.modal-box{background:var(--bg-card);border-radius:16px;padding:28px;width:90%}
+.modal-title{font-size:16px;font-weight:600;color:var(--text-main);margin-bottom:6px}
+.modal-desc{font-size:13px;color:var(--text-hint);margin-bottom:16px}
+.modal-btns{display:flex;gap:10px;margin-top:16px}
+.modal-btn-primary{flex:1;padding:10px;background:var(--accent);color:var(--hd-text);border:none;border-radius:8px;font-size:14px;cursor:pointer}
+.modal-btn-secondary{flex:1;padding:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-card);border-radius:8px;font-size:14px;cursor:pointer}
+</style>
+</head>
+<body class="theme-a">
+
+<!-- 利用規約モーダル -->
+<div class="modal-overlay" id="termsModal" style="z-index:300">
+  <div class="modal-box" style="max-width:480px;max-height:85vh;display:flex;flex-direction:column">
+    <div style="text-align:center;margin-bottom:16px">
+      <p class="lock-brand" style="margin-bottom:4px">ASUIRO LAB</p>
+      <h2 class="modal-title">ご利用にあたって</h2>
+    </div>
+    <div style="overflow-y:auto;flex:1;font-size:13px;color:var(--text-main);line-height:1.8;border:1px solid var(--border-card);border-radius:8px;padding:16px;margin-bottom:16px">
+      <p style="font-weight:600;margin-bottom:8px">著作権・利用規約</p>
+      <p style="margin-bottom:10px">本ツール「デジタルエンディングノート」は、<strong>アスイロ・ラボ</strong>が制作・提供するサービスです。</p>
+      <p style="font-weight:600;margin-bottom:6px">禁止事項</p>
+      <ul style="padding-left:16px;margin-bottom:10px">
+        <li style="margin-bottom:4px">本ツールの無断複製・転載・再配布</li>
+        <li style="margin-bottom:4px">本ツールを改変して第三者へ配布すること</li>
+        <li style="margin-bottom:4px">商業目的での無断利用</li>
+      </ul>
+      <p style="font-weight:600;margin-bottom:6px">免責事項</p>
+      <ul style="padding-left:16px;margin-bottom:10px">
+        <li style="margin-bottom:4px">入力内容はお使いの端末内にのみ保存されます</li>
+        <li style="margin-bottom:4px">データの損失・漏洩について、アスイロ・ラボは責任を負いかねます</li>
+        <li style="margin-bottom:4px">本ツールの記載内容に法的効力はありません</li>
+        <li style="margin-bottom:4px">マスターパスワードを忘れた場合、データの復元はできません</li>
+      </ul>
+      <p id="termsYear" style="font-size:12px;color:var(--text-hint);border-top:1px solid var(--border-inner);padding-top:10px;margin-top:4px"></p>
+    </div>
+    <button class="modal-btn-primary" onclick="agreeTerms()">同意して始める</button>
+  </div>
+</div>
+
+<!-- ロック画面 -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <p class="lock-brand">ASUIRO LAB</p>
+    <div style="font-size:36px;margin-bottom:12px">🔐</div>
+    <h1>エンディングノート</h1>
+    <p style="margin-top:6px;margin-bottom:20px">マスターパスワードを入力してください</p>
+    <div class="input-wrap">
+      <input type="password" id="masterPw" placeholder="マスターパスワード" onkeydown="if(event.key==='Enter')unlock()">
+      <button class="eye-btn" onclick="toggleEye('masterPw',this)">👁️</button>
+    </div>
+    <button class="btn-primary" onclick="unlock()">開く</button>
+    <div id="lockError"></div>
+    <p class="lock-note">⚠️ パスワードはどこにも保存されません。<br>忘れると復元できませんのでご注意ください。</p>
+    <div style="margin-top:18px;border-top:1px solid var(--border-inner);padding-top:14px">
+      <p style="font-size:12px;color:var(--text-hint);margin-bottom:8px">暗号化ファイルから読み込む</p>
+      <label class="import-area" for="importFile">📂 ファイルを選択してインポート
+        <input type="file" id="importFile" accept=".json" onchange="importData()">
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- メインアプリ -->
+<div id="mainApp">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-brand">ASUIRO LAB</span>
+      <span class="header-title">📓 エンディングノート</span>
+    </div>
+    <div class="header-btns">
+      <!-- テーマ切替 -->
+      <div class="theme-btns" title="テーマを変更">
+        <button class="tbtn tbtn-a active" id="tbtn-a" onclick="setTheme('a')" title="テラコッタ"></button>
+        <button class="tbtn tbtn-b" id="tbtn-b" onclick="setTheme('b')" title="モスグリーン"></button>
+        <button class="tbtn tbtn-c" id="tbtn-c" onclick="setTheme('c')" title="グレージュ"></button>
+      </div>
+      <button class="hbtn" onclick="saveData()">💾 保存</button>
+      <button class="hbtn" onclick="exportData()">📤 エクスポート</button>
+      <button class="hbtn" onclick="showPrintOptions()">🖨️ PDF</button>
+      <button class="hbtn" onclick="showVersionHistory()">🕓 履歴</button>
+      <button class="hbtn" onclick="showChangePw()">🔑 PW変更</button>
+      <button class="hbtn danger" onclick="lockApp()">🔒 ロック</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <span class="tab active" onclick="showTab(0,this)">👤 基本情報</span>
+    <span class="tab" onclick="showTab(1,this)">👨‍👩‍👧 家族・連絡先</span>
+    <span class="tab" onclick="showTab(2,this)">🏦 財産・資産</span>
+    <span class="tab" onclick="showTab(3,this)">💳 口座・カード</span>
+    <span class="tab" onclick="showTab(4,this)">📱 SNS・アカウント</span>
+    <span class="tab" onclick="showTab(5,this)">🏥 医療・介護</span>
+    <span class="tab" onclick="showTab(6,this)">⛩️ 葬儀・お墓</span>
+    <span class="tab" onclick="showTab(7,this)">💌 メッセージ</span>
+  </div>
+
+  <div class="content">
+
+    <!-- 0: 基本情報 -->
+    <div class="section active" id="sec0">
+      <div class="section-title">👤 基本情報</div>
+      <div class="section-desc">あなたの基本的なプロフィールを記入してください</div>
+      <div class="card">
+        <div class="card-title">個人情報</div>
+        <div class="row2">
+          <div class="field"><label>氏名（漢字）</label><input type="text" id="f_name" placeholder="山田 太郎"><p class="hint">戸籍に記載されている氏名を記入してください</p></div>
+          <div class="field"><label>氏名（ふりがな）</label><input type="text" id="f_kana" placeholder="やまだ たろう"></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label>生年月日</label><input type="date" id="f_birth"></div>
+          <div class="field"><label>性別</label><select id="f_gender"><option value="">選択</option><option>男性</option><option>女性</option><option>その他</option><option>回答しない</option></select></div>
+          <div class="field"><label>血液型</label><select id="f_blood"><option value="">選択</option><option>A型</option><option>B型</option><option>O型</option><option>AB型</option></select></div>
+        </div>
+        <div class="field"><label>現住所</label><input type="text" id="f_addr" placeholder="〒000-0000 住所を入力"><p class="hint">現在住んでいる住所（住民票の住所）を記入してください</p></div>
+        <div class="row2">
+          <div class="field"><label>電話番号</label><input type="tel" id="f_tel" placeholder="090-xxxx-xxxx"></div>
+          <div class="field"><label>メールアドレス</label><input type="email" id="f_email" placeholder="example@mail.com"></div>
+        </div>
+        <div class="field"><label>マイナンバー（任意）</label><input type="text" id="f_mynumber" placeholder="12桁の番号"><p class="hint">記入する場合はエクスポートファイルの管理に十分ご注意ください</p></div>
+      </div>
+      <div class="card">
+        <div class="card-title">本籍・戸籍</div>
+        <div class="field"><label>本籍地</label><input type="text" id="f_honseki" placeholder="〒000-0000 住所を入力"><p class="hint">現在の本籍地（戸籍謄本に記載されている住所）を記入してください</p></div>
+        <div class="field"><label>筆頭者</label><input type="text" id="f_hittousha" placeholder="戸籍の筆頭者の氏名"><p class="hint">戸籍の一番最初に記載されている人の氏名。一般的には婚姻時に氏を名乗った側の方です</p></div>
+        <div class="row2">
+          <div class="field"><label>パスポート番号</label><input type="text" id="f_passport" placeholder="AA1234567"></div>
+          <div class="field"><label>運転免許証番号</label><input type="text" id="f_license" placeholder="000000000000（12桁）"></div>
+        </div>
+        <div class="sub-section">
+          <div class="sub-title">戸籍の履歴</div>
+          <p class="hint" style="margin-bottom:10px">婚姻・離婚・転籍など、戸籍に変動があった出来事を記録しておくと、相続手続き時に役立ちます</p>
+          <div id="historyList"></div>
+          <button class="add-btn" onclick="addHistory()">＋ 履歴を追加</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">勤務先・職業</div>
+        <div class="field"><label>現在の勤務先</label><input type="text" id="f_company" placeholder="〇〇株式会社"><p class="hint">退職・自営の場合は「退職」「自営業」などと記入してください</p></div>
+        <div class="row2">
+          <div class="field"><label>部署・役職</label><input type="text" id="f_dept"></div>
+          <div class="field"><label>勤務先電話番号</label><input type="tel" id="f_companyTel"></div>
+        </div>
+        <div class="field"><label>勤務先住所</label><input type="text" id="f_companyAddr"></div>
+        <div class="sub-section">
+          <div class="sub-title">自由記入欄</div>
+          <p class="hint" style="margin-bottom:10px">趣味・宗教・所属団体など、伝えておきたい情報を自由に追加できます</p>
+          <div id="basicFreeList"></div>
+          <button class="add-btn" onclick="addBasicFree()">＋ 項目を追加</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1: 家族・連絡先 -->
+    <div class="section" id="sec1">
+      <div class="section-title">👨‍👩‍👧 家族・緊急連絡先</div>
+      <div class="section-desc">家族構成と連絡先を記入してください</div>
+      <div class="card">
+        <div class="card-title">家族一覧</div>
+        <p class="hint" style="margin-bottom:12px">配偶者・子・兄弟姉妹・親など、緊急時に連絡が必要な家族を登録してください</p>
+        <div id="familyList"></div>
+        <button class="add-btn" onclick="addFamily()">＋ 家族を追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">その他の重要な連絡先</div>
+        <p class="hint" style="margin-bottom:12px">弁護士・税理士・ケアマネージャーなど、いざという時に連絡してほしい人を登録してください</p>
+        <div id="contactList"></div>
+        <button class="add-btn" onclick="addContact()">＋ 連絡先を追加</button>
+      </div>
+    </div>
+
+    <!-- 2: 財産・資産 -->
+    <div class="section" id="sec2">
+      <div class="section-title">🏦 財産・資産情報</div>
+      <div class="section-desc">不動産・証券・保険・ローンなどの情報を記入してください</div>
+      <div class="card">
+        <div class="card-title">不動産</div>
+        <p class="hint" style="margin-bottom:12px">所有している土地・建物を記入してください。相続の際に必要になります</p>
+        <div id="realEstateList"></div>
+        <button class="add-btn" onclick="addRealEstate()">＋ 不動産を追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">証券口座</div>
+        <p class="hint" style="margin-bottom:12px">株式・投資信託・NISA・iDeCoなどの口座情報を記入してください</p>
+        <div id="securitiesList"></div>
+        <button class="add-btn" onclick="addSecurities()">＋ 証券口座を追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">ローン・負債</div>
+        <p class="hint" style="margin-bottom:12px">返済中のローンを記入してください。団体信用生命保険（団信）の有無も記録しておくと相続時に役立ちます</p>
+        <div id="loanList"></div>
+        <button class="add-btn" onclick="addLoan()">＋ ローンを追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">生命保険・損害保険</div>
+        <p class="hint" style="margin-bottom:12px">加入中の保険をすべて記入してください。受取人・保障額・証券番号を記録しておくと手続きがスムーズです</p>
+        <div id="insuranceList"></div>
+        <button class="add-btn" onclick="addInsurance()">＋ 保険を追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">貴重品・その他</div>
+        <div class="field"><label>貴重品・形見の場所</label><textarea id="f_valuables"></textarea><p class="hint">通帳・実印・権利証・貴金属など重要なものの保管場所を記入してください</p></div>
+      </div>
+    </div>
+
+    <!-- 3: 口座・カード -->
+    <div class="section" id="sec3">
+      <div class="section-title">💳 口座・カード・サブスク</div>
+      <div class="section-desc">金融情報は暗号化して保存されます</div>
+      <div class="warn">⚠️ この情報は非常に機密性が高いです。エクスポートしたファイルは安全な場所に保管し、マスターパスワードは絶対に忘れないようにしてください。</div>
+      <div class="card">
+        <div class="card-title">銀行口座</div>
+        <p class="hint" style="margin-bottom:12px">休眠口座も含めて記録しておくと、家族が手続きする際に漏れがなくなります</p>
+        <div id="bankList"></div>
+        <button class="add-btn" onclick="addBank()">＋ 口座を追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">クレジットカード</div>
+        <p class="hint" style="margin-bottom:12px">死亡後も引き落としが続く場合があります。カード会社への解約連絡が必要です</p>
+        <div id="cardList"></div>
+        <button class="add-btn" onclick="addCard()">＋ カードを追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">サブスクリプション・会員サービス</div>
+        <p class="hint" style="margin-bottom:12px">解約しないと引き落としが続きます。一覧にしておくと家族が対応しやすくなります</p>
+        <div id="subList"></div>
+        <button class="add-btn" onclick="addSub()">＋ サービスを追加</button>
+      </div>
+    </div>
+
+    <!-- 4: SNS -->
+    <div class="section" id="sec4">
+      <div class="section-title">📱 SNS・オンラインアカウント</div>
+      <div class="section-desc">SNSのログイン情報と、死後の対応希望を記入してください</div>
+      <div class="warn">⚠️ この情報は非常に機密性が高いです。エクスポートしたファイルは安全な場所に保管してください。</div>
+      <div class="card">
+        <div class="card-title">SNSアカウント一覧</div>
+        <p class="hint" style="margin-bottom:12px">アカウントの削除・追悼設定には本人のログイン情報が必要な場合があります</p>
+        <div id="snsList"></div>
+        <button class="add-btn" onclick="addSns()">＋ アカウントを追加</button>
+      </div>
+    </div>
+
+    <!-- 5: 医療・介護 -->
+    <div class="section" id="sec5">
+      <div class="section-title">🏥 医療・介護の希望</div>
+      <div class="section-desc">医療・介護の希望と保険情報を記入してください</div>
+      <div class="card">
+        <div class="card-title">保険・手帳情報</div>
+        <div class="sub-title" style="margin-bottom:8px">健康保険</div>
+        <div class="row2">
+          <div class="field"><label>保険の種類</label><select id="f_hokenType"><option value="">選択</option><option>社会保険（健康保険組合）</option><option>国民健康保険</option><option>後期高齢者医療保険</option><option>共済組合</option><option>その他</option></select></div>
+          <div class="field"><label>保険者名</label><input type="text" id="f_hokenSha" placeholder="〇〇健康保険組合"><p class="hint">会社員は健康保険組合名、自営業・退職者は市区町村名</p></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>被保険者番号</label><input type="text" id="f_hokenNum"><p class="hint">保険証に記載されている番号</p></div>
+          <div class="field"><label>保険証の保管場所</label><input type="text" id="f_hokenPlace" placeholder="財布・引き出しなど"></div>
+        </div>
+        <div class="sub-section">
+          <div class="sub-title">介護保険</div>
+          <div class="row2">
+            <div class="field"><label>介護保険証の有無</label><select id="f_kaigoHoken"><option value="">選択</option><option>あり</option><option>なし</option></select><p class="hint">65歳以上の方に交付されます</p></div>
+            <div class="field"><label>要介護・要支援の区分</label><select id="f_kaigoLevel"><option value="">選択</option><option>要支援1</option><option>要支援2</option><option>要介護1</option><option>要介護2</option><option>要介護3</option><option>要介護4</option><option>要介護5</option><option>なし（自立）</option></select></div>
+          </div>
+          <div class="field"><label>担当ケアマネージャー</label><input type="text" id="f_careManager" placeholder="氏名・電話番号など"></div>
+        </div>
+        <div class="sub-section">
+          <div class="sub-title">障害者手帳・その他</div>
+          <div class="row2">
+            <div class="field"><label>障害者手帳の種別</label><select id="f_shougai"><option value="">選択</option><option>身体障害者手帳（あり）</option><option>療育手帳（あり）</option><option>精神障害者保健福祉手帳（あり）</option><option>なし</option></select></div>
+            <div class="field"><label>等級・程度</label><input type="text" id="f_shougaiLevel" placeholder="〇級など"></div>
+          </div>
+          <div class="field"><label>その他の証明書・受給者証</label><input type="text" id="f_othercert" placeholder="難病受給者証・自立支援医療受給者証など"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">かかりつけ医・病院</div>
+        <div class="row2">
+          <div class="field"><label>かかりつけ医</label><input type="text" id="f_doctor" placeholder="〇〇クリニック・先生のお名前"></div>
+          <div class="field"><label>電話番号</label><input type="tel" id="f_doctorTel"></div>
+        </div>
+        <div class="field"><label>持病・常用薬</label><textarea id="f_disease" placeholder="例：高血圧（〇〇錠を毎朝服用）など"></textarea><p class="hint">救急搬送時や入院時に重要な情報です</p></div>
+        <div class="field"><label>アレルギー</label><input type="text" id="f_allergy" placeholder="薬・食物・花粉など"><p class="hint">薬のアレルギーは特に重要です。医療現場で命に関わる情報になります</p></div>
+      </div>
+      <div class="card">
+        <div class="card-title">延命治療・臓器提供</div>
+        <div class="row2">
+          <div class="field"><label>延命治療</label><select id="f_enmeichi"><option value="">選択</option><option>望む</option><option>望まない</option><option>家族に一任する</option><option>状況による</option></select><p class="hint">回復の見込みがない場合に延命することへの意思を示しておきましょう</p></div>
+          <div class="field"><label>臓器提供</label><select id="f_organ"><option value="">選択</option><option>希望する（全て）</option><option>希望する（一部）</option><option>希望しない</option></select><p class="hint">運転免許証・マイナンバーカードの裏面にも意思表示欄があります</p></div>
+        </div>
+        <div class="field"><label>詳細・補足</label><textarea id="f_medDetail"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">介護についての希望</div>
+        <div class="field"><label>介護の場所</label><select id="f_carePlace"><option value="">選択</option><option>自宅で受けたい</option><option>施設に入りたい</option><option>家族に一任する</option></select></div>
+        <div class="field"><label>介護に関する希望・メモ</label><textarea id="f_care"></textarea></div>
+      </div>
+    </div>
+
+    <!-- 6: 葬儀・お墓 -->
+    <div class="section" id="sec6">
+      <div class="section-title">⛩️ 葬儀・お墓の希望</div>
+      <div class="section-desc">葬儀やお墓についての希望を記入してください</div>
+      <div class="card">
+        <div class="card-title">葬儀の希望</div>
+        <div class="field"><label>葬儀の形式</label><select id="f_funeral"><option value="">選択</option><option>一般葬</option><option>家族葬</option><option>直葬（火葬のみ）</option><option>お別れの会</option><option>宗教に沿った葬儀</option><option>その他</option></select><p class="hint">家族とよく話し合っておくとよいでしょう</p></div>
+        <div class="row2">
+          <div class="field"><label>宗派・宗教</label><input type="text" id="f_religion" placeholder="例：仏教（浄土宗）など"></div>
+          <div class="field"><label>お寺・教会など</label><input type="text" id="f_temple" placeholder="寺院名・連絡先など"></div>
+        </div>
+        <div class="field"><label>葬儀社（希望があれば）</label><input type="text" id="f_funeralCo"></div>
+        <div class="field"><label>呼んでほしい人・呼ばなくてよい人</label><textarea id="f_funeralGuest"></textarea></div>
+        <div class="field"><label>その他の希望</label><textarea id="f_funeralNote" placeholder="例：好きだった音楽を流してほしい など"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">お墓・納骨の希望</div>
+        <div class="field"><label>お墓の希望</label><select id="f_grave"><option value="">選択</option><option>先祖のお墓に入る</option><option>樹木葬</option><option>海洋散骨</option><option>納骨堂</option><option>新たにお墓を建てる</option><option>家族に一任する</option></select><p class="hint">樹木葬・海洋散骨は継承者が不要で費用も抑えられます</p></div>
+        <div class="field"><label>既存のお墓の場所</label><input type="text" id="f_graveAddr" placeholder="〇〇霊園 〇〇区画など"></div>
+        <div class="field"><label>その他の希望</label><textarea id="f_graveNote"></textarea></div>
+      </div>
+    </div>
+
+    <!-- 7: メッセージ -->
+    <div class="section" id="sec7">
+      <div class="section-title">💌 メッセージ・遺言</div>
+      <div class="section-desc">大切な人へのメッセージを残してください</div>
+      <div class="card">
+        <div class="card-title">家族へのメッセージ</div>
+        <p class="hint" style="margin-bottom:12px">法的な拘束力はありませんが、気持ちや感謝の言葉を残しておくことができます。何度でも書き直せます</p>
+        <div id="msgList"></div>
+        <button class="add-btn" onclick="addMsg()">＋ メッセージを追加</button>
+      </div>
+      <div class="card">
+        <div class="card-title">遺産・形見分けの希望</div>
+        <div class="field"><label>遺産分配の希望</label><textarea id="f_inheritance"></textarea><p class="hint">このノートへの記載に法的効力はありません。正式な遺言書が必要な場合は、公証役場での「公正証書遺言」の作成をおすすめします</p></div>
+        <div class="field"><label>形見分けの希望</label><textarea id="f_keepsake"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">デジタルデータについて</div>
+        <div class="field"><label>デジタルデータの希望</label><textarea id="f_digital"></textarea><p class="hint">スマートフォン・パソコン・クラウドストレージなどのデータについての希望を記入してください</p></div>
+      </div>
+    </div>
+
+  </div>
+  <div style="height:110px"></div>
+  <div style="background:var(--footer-bg);color:var(--footer-text);text-align:center;padding:12px 16px;font-size:11px;line-height:1.8;margin-bottom:56px">
+    <span style="color:var(--footer-brand);font-weight:600;letter-spacing:1px">ASUIRO LAB</span>　デジタルエンディングノート<br>
+    © <span id="footerYear"></span> アスイロ・ラボ　All Rights Reserved.　無断転載・二次配布禁止
+  </div>
+  <div class="save-bar">
+    <span id="savedMsg">最終保存: まだ保存されていません</span>
+    <button class="save-btn" onclick="promptSave()">💾 保存</button>
+  </div>
+</div>
+
+<!-- パスワード変更モーダル -->
+<div class="modal-overlay" id="changePwModal">
+  <div class="modal-box" style="max-width:400px">
+    <p class="modal-title">🔑 マスターパスワードの変更</p>
+    <p class="modal-desc">新しいパスワードを設定します。変更後は必ずエクスポートしてバックアップを更新してください。</p>
+    <div class="field"><label>現在のパスワード</label>
+      <div class="pw-wrap"><input type="password" id="cpw_current">
+        <div class="pw-actions"><button onclick="toggleEye('cpw_current',this)">👁️</button></div>
+      </div>
+    </div>
+    <div class="field"><label>新しいパスワード</label>
+      <div class="pw-wrap"><input type="password" id="cpw_new">
+        <div class="pw-actions"><button onclick="toggleEye('cpw_new',this)">👁️</button></div>
+      </div>
+    </div>
+    <div class="field"><label>新しいパスワード（確認）</label>
+      <div class="pw-wrap"><input type="password" id="cpw_confirm">
+        <div class="pw-actions"><button onclick="toggleEye('cpw_confirm',this)">👁️</button></div>
+      </div>
+    </div>
+    <div id="cpw_error" style="display:none;color:#e74c3c;font-size:13px;margin-bottom:8px"></div>
+    <div class="warn">⚠️ 変更後は古いバックアップファイルは新しいパスワードでは開けません。必ず再エクスポートしてください。</div>
+    <div class="modal-btns">
+      <button class="modal-btn-primary" onclick="doChangePw()">変更する</button>
+      <button class="modal-btn-secondary" onclick="document.getElementById('changePwModal').style.display='none'">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- 保存コメントモーダル -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal-box" style="max-width:400px">
+    <p class="modal-title">💾 保存</p>
+    <p class="modal-desc">更新内容のメモを残せます（任意）</p>
+    <div class="field"><label>更新コメント（任意）</label>
+      <input type="text" id="saveComment" placeholder="例：保険情報を追加、住所を更新 など">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-primary" onclick="doSave()">保存する</button>
+      <button class="modal-btn-secondary" onclick="document.getElementById('saveModal').style.display='none'">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- バージョン履歴モーダル -->
+<div class="modal-overlay" id="versionModal">
+  <div class="modal-box" style="max-width:480px;max-height:80vh;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <p class="modal-title" style="margin:0">🕓 更新履歴</p>
+      <button onclick="document.getElementById('versionModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-hint)">✕</button>
+    </div>
+    <div id="versionList" style="overflow-y:auto;flex:1;border:1px solid var(--border-card);border-radius:8px"></div>
+    <p style="font-size:11px;color:var(--text-hint);margin-top:10px">最新50件まで保存されます</p>
+  </div>
+</div>
+
+<!-- 印刷モーダル -->
+<div class="modal-overlay" id="printModal">
+  <div class="modal-box" style="max-width:420px">
+    <p class="modal-title">🖨️ PDF出力オプション</p>
+    <p class="modal-desc">印刷するセクションを選択してください</p>
+    <div id="printOptions" style="margin-bottom:16px"></div>
+    <div class="warn">⚠️ パスワード情報が含まれる場合は印刷物の管理にご注意ください</div>
+    <div class="modal-btns">
+      <button class="modal-btn-primary" onclick="doPrint()">印刷する</button>
+      <button class="modal-btn-secondary" onclick="document.getElementById('printModal').style.display='none'">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let masterPw='',autoLockTimer=null,versionHistory=[];
+const AUTO_LOCK_MIN=10,MAX_VERSIONS=50;
+
+// ===== テーマ =====
+function setTheme(t){
+  document.body.className='theme-'+t;
+  localStorage.setItem('asuiroTheme',t);
+  ['a','b','c'].forEach(x=>{
+    const btn=document.getElementById('tbtn-'+x);
+    if(btn) btn.classList.toggle('active',x===t);
+  });
+}
+function loadTheme(){
+  const t=localStorage.getItem('asuiroTheme')||'a';
+  setTheme(t);
+}
+
+// ===== 利用規約 =====
+function checkTerms(){
+  const yr=new Date().getFullYear();
+  document.getElementById('footerYear').textContent=yr;
+  const ty=document.getElementById('termsYear');
+  if(ty) ty.textContent='© '+yr+' アスイロ・ラボ　All Rights Reserved.　無断転載・二次配布を固く禁じます。';
+  document.getElementById('termsModal').style.display='flex';
+}
+function agreeTerms(){document.getElementById('termsModal').style.display='none'}
+window.addEventListener('load',()=>{loadTheme();checkTerms()});
+
+// ===== 認証 =====
+function unlock(){
+  const pw=document.getElementById('masterPw').value;
+  if(!pw){showErr('パスワードを入力してください');return}
+  masterPw=pw;
+  const saved=localStorage.getItem('endingNoteData');
+  if(saved){
+    try{
+      const dec=CryptoJS.AES.decrypt(saved,masterPw).toString(CryptoJS.enc.Utf8);
+      if(!dec)throw 0;
+      loadData(JSON.parse(dec));
+    }catch(e){showErr('パスワードが違います');masterPw='';return}
+  } else {initDynamicLists()}
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  resetAutoLock();
+}
+function lockApp(){
+  if(!confirm('ロックしますか？未保存のデータは失われます。'))return;
+  masterPw='';
+  document.getElementById('lockScreen').style.display='flex';
+  document.getElementById('mainApp').style.display='none';
+  document.getElementById('masterPw').value='';
+  clearTimeout(autoLockTimer);
+}
+function resetAutoLock(){
+  clearTimeout(autoLockTimer);
+  autoLockTimer=setTimeout(()=>{alert(AUTO_LOCK_MIN+'分間操作がなかったため自動ロックします');lockApp();},AUTO_LOCK_MIN*60*1000);
+}
+document.addEventListener('click',resetAutoLock);
+document.addEventListener('keydown',resetAutoLock);
+function showErr(msg){const e=document.getElementById('lockError');e.textContent=msg;e.style.display='block'}
+function toggleEye(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁️':'🙈'}
+function togglePw(id,btn){toggleEye(id,btn)}
+function copyPw(id){const v=(document.getElementById(id)||{}).value;if(!v){showToast('未入力です','error');return}navigator.clipboard.writeText(v).then(()=>showToast('コピーしました'))}
+function showTab(idx,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec'+idx).classList.add('active');el.classList.add('active');
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function renderList(id,items,fn){const el=document.getElementById(id);if(el)el.innerHTML=items.map((it,i)=>fn(it,i)).join('')}
+function mkuid(p){return p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2)}
+
+let historyItems=[],basicFreeItems=[],familyItems=[],contactItems=[];
+let realEstateItems=[],securitiesItems=[],loanItems=[],insuranceItems=[];
+let bankItems=[],cardItems=[],subItems=[],snsItems=[],msgItems=[];
+
+function initDynamicLists(){
+  if(!familyItems.length)addFamily();
+  if(!bankItems.length)addBank();
+  if(!cardItems.length)addCard();
+  if(!subItems.length)addSub();
+  if(!snsItems.length)addSns();
+  if(!msgItems.length)addMsg();
+}
+
+function addHistory(){historyItems.push({type:'',date:'',honseki:'',hittousha:'',detail:''});renderHistory()}
+function delHistory(i){historyItems.splice(i,1);renderHistory()}
+function renderHistory(){renderList('historyList',historyItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delHistory(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>種別</label><select oninput="historyItems[${i}].type=this.value">
+    <option ${it.type===''?'selected':''} value="">選択</option>
+    ${['出生','婚姻','離婚','養子縁組','離縁','本籍地変更（転籍）','筆頭者変更','改名・改姓','認知','その他'].map(s=>`<option ${it.type===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+  <div class="field"><label>届出日</label><input type="date" value="${esc(it.date)}" oninput="historyItems[${i}].date=this.value"></div>
+</div>
+<div class="field"><label>その時の本籍地</label><input type="text" value="${esc(it.honseki)}" oninput="historyItems[${i}].honseki=this.value" placeholder="〒000-0000 住所"></div>
+<div class="field"><label>その時の筆頭者</label><input type="text" value="${esc(it.hittousha)}" oninput="historyItems[${i}].hittousha=this.value"></div>
+<div class="field"><label>詳細・メモ</label><input type="text" value="${esc(it.detail)}" oninput="historyItems[${i}].detail=this.value" placeholder="例：〇〇と婚姻、旧姓△△など"></div>
+</div>`)}
+
+function addBasicFree(){basicFreeItems.push({label:'',value:''});renderBasicFree()}
+function delBasicFree(i){basicFreeItems.splice(i,1);renderBasicFree()}
+function renderBasicFree(){renderList('basicFreeList',basicFreeItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delBasicFree(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>項目名</label><input type="text" value="${esc(it.label)}" oninput="basicFreeItems[${i}].label=this.value" placeholder="趣味・宗教・所属団体など"></div>
+  <div class="field"><label>内容</label><input type="text" value="${esc(it.value)}" oninput="basicFreeItems[${i}].value=this.value"></div>
+</div></div>`)}
+
+function addFamily(){familyItems.push({name:'',rel:'',birth:'',tel:'',email:'',addr:'',note:''});renderFamilies()}
+function delFamily(i){familyItems.splice(i,1);renderFamilies()}
+function renderFamilies(){renderList('familyList',familyItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delFamily(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>氏名</label><input type="text" value="${esc(it.name)}" oninput="familyItems[${i}].name=this.value"></div>
+  <div class="field"><label>続柄</label><input type="text" value="${esc(it.rel)}" oninput="familyItems[${i}].rel=this.value" placeholder="長男・配偶者など"></div>
+</div>
+<div class="row2">
+  <div class="field"><label>生年月日</label><input type="date" value="${esc(it.birth)}" oninput="familyItems[${i}].birth=this.value"></div>
+  <div class="field"><label>電話番号</label><input type="tel" value="${esc(it.tel)}" oninput="familyItems[${i}].tel=this.value"></div>
+</div>
+<div class="field"><label>メールアドレス</label><input type="email" value="${esc(it.email)}" oninput="familyItems[${i}].email=this.value"></div>
+<div class="field"><label>住所</label><input type="text" value="${esc(it.addr)}" oninput="familyItems[${i}].addr=this.value" placeholder="〒000-0000 住所"></div>
+<div class="field"><label>メモ</label><input type="text" value="${esc(it.note)}" oninput="familyItems[${i}].note=this.value"></div>
+</div>`)}
+
+function addContact(){contactItems.push({name:'',role:'',tel:'',email:'',addr:'',freeItems:[]});renderContacts()}
+function delContact(i){contactItems.splice(i,1);renderContacts()}
+function addContactFree(i){contactItems[i].freeItems.push({label:'',value:''});renderContacts()}
+function delContactFree(i,j){contactItems[i].freeItems.splice(j,1);renderContacts()}
+function renderContacts(){renderList('contactList',contactItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delContact(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>氏名・名称</label><input type="text" value="${esc(it.name)}" oninput="contactItems[${i}].name=this.value"></div>
+  <div class="field"><label>役割</label><input type="text" value="${esc(it.role)}" oninput="contactItems[${i}].role=this.value" placeholder="弁護士・税理士・友人など"></div>
+</div>
+<div class="row2">
+  <div class="field"><label>電話番号</label><input type="tel" value="${esc(it.tel)}" oninput="contactItems[${i}].tel=this.value"></div>
+  <div class="field"><label>メール</label><input type="email" value="${esc(it.email)}" oninput="contactItems[${i}].email=this.value"></div>
+</div>
+<div class="field"><label>住所</label><input type="text" value="${esc(it.addr)}" oninput="contactItems[${i}].addr=this.value" placeholder="〒000-0000 住所"></div>
+${(it.freeItems||[]).map((f,j)=>`
+<div class="list-item" style="margin-top:6px;padding:10px">
+  <button class="del-btn" onclick="delContactFree(${i},${j})">削除</button>
+  <div class="row2">
+    <div class="field"><label>項目名</label><input type="text" value="${esc(f.label)}" oninput="contactItems[${i}].freeItems[${j}].label=this.value" placeholder="FAX・メモなど"></div>
+    <div class="field"><label>内容</label><input type="text" value="${esc(f.value)}" oninput="contactItems[${i}].freeItems[${j}].value=this.value"></div>
+  </div>
+</div>`).join('')}
+<button class="add-btn" style="margin-top:8px;padding:6px" onclick="addContactFree(${i})">＋ 自由項目を追加</button>
+</div>`)}
+
+function addRealEstate(){realEstateItems.push({type:'',addr:'',area:'',note:''});renderRealEstate()}
+function delRealEstate(i){realEstateItems.splice(i,1);renderRealEstate()}
+function renderRealEstate(){renderList('realEstateList',realEstateItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delRealEstate(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>種類</label><select oninput="realEstateItems[${i}].type=this.value">
+    <option ${it.type===''?'selected':''} value="">選択</option>
+    ${['自宅（持ち家）','土地','賃貸不動産','その他'].map(s=>`<option ${it.type===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+  <div class="field"><label>面積</label><input type="text" value="${esc(it.area)}" oninput="realEstateItems[${i}].area=this.value" placeholder="〇〇㎡"></div>
+</div>
+<div class="field"><label>所在地</label><input type="text" value="${esc(it.addr)}" oninput="realEstateItems[${i}].addr=this.value"></div>
+<div class="field"><label>メモ（名義人・ローン有無など）</label><input type="text" value="${esc(it.note)}" oninput="realEstateItems[${i}].note=this.value"></div>
+</div>`)}
+
+function addSecurities(){securitiesItems.push({co:'',type:'',num:'',netId:'',netPw:'',note:'',u:mkuid('sc')});renderSecurities()}
+function delSecurities(i){securitiesItems.splice(i,1);renderSecurities()}
+function renderSecurities(){renderList('securitiesList',securitiesItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delSecurities(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>証券会社名</label><input type="text" value="${esc(it.co)}" oninput="securitiesItems[${i}].co=this.value" placeholder="〇〇証券など"></div>
+  <div class="field"><label>口座種別</label><select oninput="securitiesItems[${i}].type=this.value">
+    <option ${it.type===''?'selected':''} value="">選択</option>
+    ${['特定口座','一般口座','NISA口座','iDeCo','その他'].map(s=>`<option ${it.type===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+</div>
+<div class="field"><label>口座番号</label><input type="text" value="${esc(it.num)}" oninput="securitiesItems[${i}].num=this.value"></div>
+<div class="row2">
+  <div class="field"><label>ログインID</label><input type="text" value="${esc(it.netId)}" oninput="securitiesItems[${i}].netId=this.value"></div>
+  <div class="field"><label>ログインパスワード</label>
+    <div class="pw-wrap"><input type="password" id="${it.u}_pw" value="${esc(it.netPw)}" oninput="securitiesItems[${i}].netPw=this.value">
+      <div class="pw-actions"><button onclick="togglePw('${it.u}_pw',this)">👁️</button><button onclick="copyPw('${it.u}_pw')">📋</button></div>
+    </div>
+  </div>
+</div>
+<div class="field"><label>保有商品・メモ</label><input type="text" value="${esc(it.note)}" oninput="securitiesItems[${i}].note=this.value" placeholder="日本株・投資信託・米国ETFなど"></div>
+</div>`)}
+
+function addLoan(){loanItems.push({type:'',lender:'',balance:'',monthly:'',endDate:'',note:''});renderLoans()}
+function delLoan(i){loanItems.splice(i,1);renderLoans()}
+function renderLoans(){renderList('loanList',loanItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delLoan(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>ローンの種類</label><select oninput="loanItems[${i}].type=this.value">
+    <option ${it.type===''?'selected':''} value="">選択</option>
+    ${['住宅ローン','マイカーローン','教育ローン','カードローン','その他ローン'].map(s=>`<option ${it.type===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+  <div class="field"><label>借入先</label><input type="text" value="${esc(it.lender)}" oninput="loanItems[${i}].lender=this.value" placeholder="〇〇銀行など"></div>
+</div>
+<div class="row3">
+  <div class="field"><label>残高（目安）</label><input type="text" value="${esc(it.balance)}" oninput="loanItems[${i}].balance=this.value" placeholder="〇〇万円"></div>
+  <div class="field"><label>月々の返済額</label><input type="text" value="${esc(it.monthly)}" oninput="loanItems[${i}].monthly=this.value" placeholder="〇〇円/月"></div>
+  <div class="field"><label>完済予定年月</label><input type="month" value="${esc(it.endDate)}" oninput="loanItems[${i}].endDate=this.value"></div>
+</div>
+<div class="field"><label>メモ（団信加入有無・担保など）</label><input type="text" value="${esc(it.note)}" oninput="loanItems[${i}].note=this.value"></div>
+</div>`)}
+
+function addInsurance(){insuranceItems.push({co:'',type:'',num:'',beneficiary:'',contact:'',premium:'',payMethod:'',coverage:''});renderInsurance()}
+function delInsurance(i){insuranceItems.splice(i,1);renderInsurance()}
+function renderInsurance(){renderList('insuranceList',insuranceItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delInsurance(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>保険会社名</label><input type="text" value="${esc(it.co)}" oninput="insuranceItems[${i}].co=this.value" placeholder="〇〇生命"></div>
+  <div class="field"><label>種類</label><input type="text" value="${esc(it.type)}" oninput="insuranceItems[${i}].type=this.value" placeholder="終身・医療・がんなど"></div>
+</div>
+<div class="row2">
+  <div class="field"><label>証券番号</label><input type="text" value="${esc(it.num)}" oninput="insuranceItems[${i}].num=this.value"></div>
+  <div class="field"><label>受取人</label><input type="text" value="${esc(it.beneficiary)}" oninput="insuranceItems[${i}].beneficiary=this.value"></div>
+</div>
+<div class="row3">
+  <div class="field"><label>保障額</label><input type="text" value="${esc(it.coverage)}" oninput="insuranceItems[${i}].coverage=this.value" placeholder="〇〇万円"></div>
+  <div class="field"><label>月額掛金</label><input type="text" value="${esc(it.premium)}" oninput="insuranceItems[${i}].premium=this.value" placeholder="〇〇円/月"></div>
+  <div class="field"><label>支払方法</label><select oninput="insuranceItems[${i}].payMethod=this.value">
+    <option ${it.payMethod===''?'selected':''} value="">選択</option>
+    ${['口座振替','クレジットカード','年払い','半年払い'].map(s=>`<option ${it.payMethod===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+</div>
+<div class="field"><label>連絡先・代理店</label><input type="text" value="${esc(it.contact)}" oninput="insuranceItems[${i}].contact=this.value"></div>
+</div>`)}
+
+function addBank(){bankItems.push({bank:'',branch:'',type:'',num:'',cardNum:'',pin:'',netId:'',netPw:'',note:'',u:mkuid('bk')});renderBanks()}
+function delBank(i){bankItems.splice(i,1);renderBanks()}
+function renderBanks(){renderList('bankList',bankItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delBank(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>銀行名</label><input type="text" value="${esc(it.bank)}" oninput="bankItems[${i}].bank=this.value" placeholder="〇〇銀行"></div>
+  <div class="field"><label>支店名</label><input type="text" value="${esc(it.branch)}" oninput="bankItems[${i}].branch=this.value"></div>
+</div>
+<div class="row2">
+  <div class="field"><label>口座種別</label><select oninput="bankItems[${i}].type=this.value">
+    <option ${it.type===''?'selected':''} value="">選択</option>
+    ${['普通','定期','当座'].map(s=>`<option ${it.type===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+  <div class="field"><label>口座番号</label><input type="text" value="${esc(it.num)}" oninput="bankItems[${i}].num=this.value"></div>
+</div>
+<div class="field"><label>キャッシュカード番号</label><input type="text" value="${esc(it.cardNum)}" oninput="bankItems[${i}].cardNum=this.value" placeholder="カード表面の番号（任意）"></div>
+<div class="field"><label>キャッシュカードPIN</label>
+  <div class="pw-wrap"><input type="password" id="${it.u}_pin" value="${esc(it.pin)}" oninput="bankItems[${i}].pin=this.value">
+    <div class="pw-actions"><button onclick="togglePw('${it.u}_pin',this)">👁️</button><button onclick="copyPw('${it.u}_pin')">📋</button></div>
+  </div>
+</div>
+<div class="sub-section"><div class="sub-title">ネット銀行ログイン情報</div>
+<div class="field"><label>ログインID</label><input type="text" value="${esc(it.netId)}" oninput="bankItems[${i}].netId=this.value"><p class="hint">ネット銀行・アプリバンクの場合に記入してください</p></div>
+<div class="field"><label>ログインパスワード</label>
+  <div class="pw-wrap"><input type="password" id="${it.u}_npw" value="${esc(it.netPw)}" oninput="bankItems[${i}].netPw=this.value">
+    <div class="pw-actions"><button onclick="togglePw('${it.u}_npw',this)">👁️</button><button onclick="copyPw('${it.u}_npw')">📋</button></div>
+  </div>
+</div></div>
+<div class="field"><label>メモ・ネットバンクURL</label><input type="text" value="${esc(it.note)}" oninput="bankItems[${i}].note=this.value"></div>
+</div>`)}
+
+function addCard(){cardItems.push({name:'',num:'',exp:'',pin:'',note:'',u:mkuid('cd')});renderCards()}
+function delCard(i){cardItems.splice(i,1);renderCards()}
+function renderCards(){renderList('cardList',cardItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delCard(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>カード名</label><input type="text" value="${esc(it.name)}" oninput="cardItems[${i}].name=this.value" placeholder="〇〇VISAカード"></div>
+  <div class="field"><label>有効期限</label><input type="text" value="${esc(it.exp)}" oninput="cardItems[${i}].exp=this.value" placeholder="MM/YY"></div>
+</div>
+<div class="field"><label>カード番号</label><input type="text" value="${esc(it.num)}" oninput="cardItems[${i}].num=this.value" placeholder="xxxx-xxxx-xxxx-1234"></div>
+<div class="field"><label>暗証番号・ネットパスワード</label>
+  <div class="pw-wrap"><input type="password" id="${it.u}_pin" value="${esc(it.pin)}" oninput="cardItems[${i}].pin=this.value">
+    <div class="pw-actions"><button onclick="togglePw('${it.u}_pin',this)">👁️</button><button onclick="copyPw('${it.u}_pin')">📋</button></div>
+  </div>
+</div>
+<div class="field"><label>メモ</label><input type="text" value="${esc(it.note)}" oninput="cardItems[${i}].note=this.value" placeholder="解約先電話番号など"></div>
+</div>`)}
+
+function addSub(){subItems.push({name:'',id:'',pw:'',fee:'',note:'',u:mkuid('sb')});renderSubs()}
+function delSub(i){subItems.splice(i,1);renderSubs()}
+function renderSubs(){renderList('subList',subItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delSub(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>サービス名</label><input type="text" value="${esc(it.name)}" oninput="subItems[${i}].name=this.value" placeholder="Netflix, Amazonなど"></div>
+  <div class="field"><label>月額／年額</label><input type="text" value="${esc(it.fee)}" oninput="subItems[${i}].fee=this.value" placeholder="¥1,490/月"></div>
+</div>
+<div class="row2">
+  <div class="field"><label>ログインID／メール</label><input type="text" value="${esc(it.id)}" oninput="subItems[${i}].id=this.value"></div>
+  <div class="field"><label>パスワード</label>
+    <div class="pw-wrap"><input type="password" id="${it.u}_pw" value="${esc(it.pw)}" oninput="subItems[${i}].pw=this.value">
+      <div class="pw-actions"><button onclick="togglePw('${it.u}_pw',this)">👁️</button><button onclick="copyPw('${it.u}_pw')">📋</button></div>
+    </div>
+  </div>
+</div>
+<div class="field"><label>メモ（解約方法など）</label><input type="text" value="${esc(it.note)}" oninput="subItems[${i}].note=this.value"></div>
+</div>`)}
+
+const SNS_LIST=['X（旧Twitter）','Instagram','Facebook','LINE','YouTube','TikTok','Pinterest','その他'];
+function addSns(){snsItems.push({service:'',id:'',pw:'',afterDeath:'',note:'',u:mkuid('sn')});renderSns()}
+function delSns(i){snsItems.splice(i,1);renderSns()}
+function renderSns(){renderList('snsList',snsItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delSns(${i})">削除</button>
+<div class="row2">
+  <div class="field"><label>サービス名</label><select oninput="snsItems[${i}].service=this.value">
+    <option value="">選択</option>
+    ${SNS_LIST.map(s=>`<option ${it.service===s?'selected':''}>${s}</option>`).join('')}
+  </select></div>
+  <div class="field"><label>ユーザー名／ID</label><input type="text" value="${esc(it.id)}" oninput="snsItems[${i}].id=this.value" placeholder="@usernameなど"></div>
+</div>
+<div class="field"><label>パスワード</label>
+  <div class="pw-wrap"><input type="password" id="${it.u}_pw" value="${esc(it.pw)}" oninput="snsItems[${i}].pw=this.value">
+    <div class="pw-actions"><button onclick="togglePw('${it.u}_pw',this)">👁️</button><button onclick="copyPw('${it.u}_pw')">📋</button></div>
+  </div>
+</div>
+<div class="field"><label>死後の対応希望</label><select oninput="snsItems[${i}].afterDeath=this.value">
+  <option value="">選択</option>
+  ${['削除してほしい','そのままにしてほしい','追悼アカウントにしてほしい','家族に一任する'].map(s=>`<option ${it.afterDeath===s?'selected':''}>${s}</option>`).join('')}
+</select></div>
+<div class="field"><label>メモ</label><input type="text" value="${esc(it.note)}" oninput="snsItems[${i}].note=this.value"></div>
+</div>`)}
+
+function addMsg(){msgItems.push({to:'',msg:''});renderMsgs()}
+function delMsg(i){msgItems.splice(i,1);renderMsgs()}
+function renderMsgs(){renderList('msgList',msgItems,(it,i)=>`
+<div class="list-item"><button class="del-btn" onclick="delMsg(${i})">削除</button>
+<div class="field"><label>宛先</label><input type="text" value="${esc(it.to)}" oninput="msgItems[${i}].to=this.value" placeholder="〇〇へ・家族全員へなど"></div>
+<div class="field"><label>メッセージ</label><textarea oninput="msgItems[${i}].msg=this.value">${esc(it.msg)}</textarea></div>
+</div>`)}
+
+function gv(id){return(document.getElementById(id)||{}).value||''}
+function sv(id,v){const e=document.getElementById(id);if(e)e.value=v||''}
+
+function collectData(){
+  return{
+    version:1,savedAt:new Date().toISOString(),
+    basic:{name:gv('f_name'),kana:gv('f_kana'),birth:gv('f_birth'),gender:gv('f_gender'),blood:gv('f_blood'),addr:gv('f_addr'),tel:gv('f_tel'),email:gv('f_email'),mynumber:gv('f_mynumber'),honseki:gv('f_honseki'),hittousha:gv('f_hittousha'),passport:gv('f_passport'),license:gv('f_license'),company:gv('f_company'),dept:gv('f_dept'),companyTel:gv('f_companyTel'),companyAddr:gv('f_companyAddr')},
+    history:historyItems,basicFree:basicFreeItems,
+    family:familyItems,contacts:contactItems,
+    realEstate:realEstateItems,securities:securitiesItems,loans:loanItems,insurance:insuranceItems,
+    assets:{valuables:gv('f_valuables')},
+    banks:bankItems,cards:cardItems,subs:subItems,sns:snsItems,
+    medical:{hokenType:gv('f_hokenType'),hokenSha:gv('f_hokenSha'),hokenNum:gv('f_hokenNum'),hokenPlace:gv('f_hokenPlace'),kaigoHoken:gv('f_kaigoHoken'),kaigoLevel:gv('f_kaigoLevel'),careManager:gv('f_careManager'),shougai:gv('f_shougai'),shougaiLevel:gv('f_shougaiLevel'),othercert:gv('f_othercert'),doctor:gv('f_doctor'),doctorTel:gv('f_doctorTel'),disease:gv('f_disease'),allergy:gv('f_allergy'),enmeichi:gv('f_enmeichi'),organ:gv('f_organ'),medDetail:gv('f_medDetail'),carePlace:gv('f_carePlace'),care:gv('f_care')},
+    funeral:{type:gv('f_funeral'),religion:gv('f_religion'),temple:gv('f_temple'),funeralCo:gv('f_funeralCo'),guest:gv('f_funeralGuest'),note:gv('f_funeralNote'),grave:gv('f_grave'),graveAddr:gv('f_graveAddr'),graveNote:gv('f_graveNote')},
+    messages:{msgs:msgItems,inheritance:gv('f_inheritance'),keepsake:gv('f_keepsake'),digital:gv('f_digital')},
+    versionHistory:versionHistory
+  };
+}
+
+function loadData(d){
+  const b=d.basic||{};
+  ['name','kana','birth','gender','blood','addr','tel','email','mynumber','honseki','hittousha','passport','license','company','dept','companyTel','companyAddr'].forEach(k=>sv('f_'+k,b[k]));
+  historyItems=d.history||[];renderHistory();
+  basicFreeItems=d.basicFree||[];renderBasicFree();
+  familyItems=d.family||[];renderFamilies();
+  contactItems=(d.contacts||[]).map(c=>({freeItems:[],...c}));renderContacts();
+  realEstateItems=d.realEstate||[];renderRealEstate();
+  securitiesItems=(d.securities||[]).map(x=>({...x,u:x.u||mkuid('sc')}));renderSecurities();
+  loanItems=d.loans||[];renderLoans();
+  insuranceItems=d.insurance||[];renderInsurance();
+  sv('f_valuables',(d.assets||{}).valuables);
+  bankItems=(d.banks||[]).map(x=>({...x,u:x.u||mkuid('bk')}));renderBanks();
+  cardItems=(d.cards||[]).map(x=>({...x,u:x.u||mkuid('cd')}));renderCards();
+  subItems=(d.subs||[]).map(x=>({...x,u:x.u||mkuid('sb')}));renderSubs();
+  snsItems=(d.sns||[]).map(x=>({...x,u:x.u||mkuid('sn')}));renderSns();
+  const m=d.medical||{};
+  ['hokenType','hokenSha','hokenNum','hokenPlace','kaigoHoken','kaigoLevel','careManager','shougai','shougaiLevel','othercert','doctor','doctorTel','disease','allergy','enmeichi','organ','medDetail','carePlace','care'].forEach(k=>sv('f_'+k,m[k]));
+  const f=d.funeral||{};
+  sv('f_funeral',f.type);sv('f_religion',f.religion);sv('f_temple',f.temple);sv('f_funeralCo',f.funeralCo);sv('f_funeralGuest',f.guest);sv('f_funeralNote',f.note);sv('f_grave',f.grave);sv('f_graveAddr',f.graveAddr);sv('f_graveNote',f.graveNote);
+  const ms=d.messages||{};
+  msgItems=ms.msgs||[];renderMsgs();
+  sv('f_inheritance',ms.inheritance);sv('f_keepsake',ms.keepsake);sv('f_digital',ms.digital);
+  versionHistory=d.versionHistory||[];
+  if(d.savedAt) document.getElementById('savedMsg').textContent='最終保存: '+new Date(d.savedAt).toLocaleString('ja-JP');
+  initDynamicLists();
+}
+
+function promptSave(){
+  document.getElementById('saveComment').value='';
+  document.getElementById('saveModal').style.display='flex';
+  setTimeout(()=>document.getElementById('saveComment').focus(),100);
+}
+function doSave(){
+  const comment=document.getElementById('saveComment').value.trim();
+  const now=new Date();
+  versionHistory.unshift({date:now.toISOString(),comment:comment||''});
+  if(versionHistory.length>MAX_VERSIONS) versionHistory=versionHistory.slice(0,MAX_VERSIONS);
+  const enc=CryptoJS.AES.encrypt(JSON.stringify(collectData()),masterPw).toString();
+  localStorage.setItem('endingNoteData',enc);
+  document.getElementById('savedMsg').textContent='最終保存: '+now.toLocaleString('ja-JP');
+  document.getElementById('saveModal').style.display='none';
+  showToast('保存しました ✅');
+}
+function saveData(){promptSave()}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('saveModal').style.display==='flex')doSave()});
+
+function showVersionHistory(){
+  const list=document.getElementById('versionList');
+  list.innerHTML=!versionHistory.length
+    ?'<p style="padding:20px;text-align:center;color:var(--text-hint);font-size:13px">まだ保存履歴がありません</p>'
+    :versionHistory.map((v,i)=>`<div class="ver-item"><div class="ver-date">${i===0?'🟢 最新　':''}${new Date(v.date).toLocaleString('ja-JP')}</div>${v.comment?`<div class="ver-comment">📝 ${esc(v.comment)}</div>`:'<div class="ver-no-comment">（コメントなし）</div>'}</div>`).join('');
+  document.getElementById('versionModal').style.display='flex';
+}
+
+function showChangePw(){
+  ['cpw_current','cpw_new','cpw_confirm'].forEach(id=>sv(id,''));
+  document.getElementById('cpw_error').style.display='none';
+  document.getElementById('changePwModal').style.display='flex';
+  setTimeout(()=>document.getElementById('cpw_current').focus(),100);
+}
+function doChangePw(){
+  const cur=gv('cpw_current'),nw=gv('cpw_new'),cf=gv('cpw_confirm');
+  const err=document.getElementById('cpw_error');
+  err.style.display='none';
+  if(cur!==masterPw){err.textContent='現在のパスワードが違います';err.style.display='block';return}
+  if(!nw){err.textContent='新しいパスワードを入力してください';err.style.display='block';return}
+  if(nw.length<4){err.textContent='パスワードは4文字以上で設定してください';err.style.display='block';return}
+  if(nw!==cf){err.textContent='新しいパスワードが一致しません';err.style.display='block';return}
+  if(nw===cur){err.textContent='現在と同じパスワードです';err.style.display='block';return}
+  masterPw=nw;
+  const enc=CryptoJS.AES.encrypt(JSON.stringify(collectData()),masterPw).toString();
+  localStorage.setItem('endingNoteData',enc);
+  document.getElementById('changePwModal').style.display='none';
+  showToast('パスワードを変更しました。再エクスポートをお忘れなく 🔑');
+}
+
+function exportData(){
+  const enc=CryptoJS.AES.encrypt(JSON.stringify(collectData()),masterPw).toString();
+  const blob=new Blob([JSON.stringify({encrypted:enc,version:1,createdAt:new Date().toISOString()})],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='ending_note_'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  showToast('エクスポートしました 📤');
+}
+function importData(){
+  const file=document.getElementById('importFile').files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const json=JSON.parse(e.target.result);
+      const pw=document.getElementById('masterPw').value;
+      if(!pw){showErr('先にパスワードを入力してください');return}
+      const dec=CryptoJS.AES.decrypt(json.encrypted,pw).toString(CryptoJS.enc.Utf8);
+      if(!dec)throw 0;
+      masterPw=pw;loadData(JSON.parse(dec));
+      document.getElementById('lockScreen').style.display='none';
+      document.getElementById('mainApp').style.display='block';
+      resetAutoLock();
+    }catch(e){showErr('読み込みに失敗しました。パスワードを確認してください')}
+  };
+  reader.readAsText(file);
+}
+
+const PRINT_SECTIONS=[
+  {key:'basic',label:'👤 基本情報・戸籍'},
+  {key:'family',label:'👨‍👩‍👧 家族・連絡先'},
+  {key:'assets',label:'🏦 財産・資産'},
+  {key:'banks',label:'💳 口座・カード・サブスク',sensitive:true},
+  {key:'sns',label:'📱 SNS・アカウント',sensitive:true},
+  {key:'medical',label:'🏥 医療・介護・保険情報'},
+  {key:'funeral',label:'⛩️ 葬儀・お墓'},
+  {key:'messages',label:'💌 メッセージ・遺言'}
+];
+function showPrintOptions(){
+  document.getElementById('printOptions').innerHTML=PRINT_SECTIONS.map(s=>`
+  <label style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-inner);cursor:pointer;font-size:13px;color:var(--text-main)">
+    <input type="checkbox" id="po_${s.key}" checked style="width:15px;height:15px">
+    <span>${s.label}${s.sensitive?` <span style="font-size:10px;color:#c07000;background:#fff3cd;padding:1px 5px;border-radius:4px">機密情報含む</span>`:''}</span>
+  </label>`).join('');
+  document.getElementById('printModal').style.display='flex';
+}
+function doPrint(){
+  const sel=PRINT_SECTIONS.filter(s=>document.getElementById('po_'+s.key)?.checked);
+  document.getElementById('printModal').style.display='none';
+  const win=window.open('','_blank','width=900,height=700');
+  win.document.write(buildPrintHtml(collectData(),sel));
+  win.document.close();win.focus();
+  setTimeout(()=>win.print(),500);
+}
+function pr(label,val){if(!val)return'';return`<tr><td style="padding:4pt 10pt 4pt 0;color:#555;font-size:9pt;white-space:nowrap;vertical-align:top;min-width:110pt">${label}</td><td style="padding:4pt 0;font-size:10pt;white-space:pre-wrap">${val}</td></tr>`}
+function tbl(rows){const r=rows.filter(Boolean).join('');return r?`<table style="width:100%;border-collapse:collapse;margin-bottom:8pt">${r}</table>`:''}
+function h2(t){return`<h2 style="font-size:13pt;margin:18pt 0 8pt;border-bottom:2pt solid #333;padding-bottom:3pt">${t}</h2>`}
+function buildPrintHtml(d,sel){
+  const nm=d.basic?.name||'';
+  let body=`<div style="text-align:center;border-bottom:2pt solid #000;padding-bottom:10pt;margin-bottom:18pt"><h1 style="font-size:20pt;margin-bottom:3pt">エンディングノート</h1><p style="font-size:11pt;color:#555">${nm}　作成日: ${new Date().toLocaleDateString('ja-JP')}</p></div>`;
+  const keys=sel.map(s=>s.key);
+  if(keys.includes('basic')){const b=d.basic||{};body+=h2('基本情報')+tbl([pr('氏名',b.name),pr('ふりがな',b.kana),pr('生年月日',b.birth),pr('性別',b.gender),pr('血液型',b.blood),pr('住所',b.addr),pr('電話',b.tel),pr('メール',b.email),pr('本籍地',b.honseki),pr('筆頭者',b.hittousha),pr('パスポート',b.passport),pr('運転免許証',b.license)]);if(b.company)body+=`<p style="font-weight:bold;margin:8pt 0 3pt">勤務先</p>`+tbl([pr('勤務先名',b.company),pr('部署・役職',b.dept),pr('電話番号',b.companyTel),pr('住所',b.companyAddr)]);if((d.history||[]).length){body+=`<p style="font-weight:bold;margin:8pt 0 3pt">戸籍の履歴</p>`;d.history.forEach(h=>{body+=tbl([pr('種別',h.type),pr('届出日',h.date),pr('その時の本籍地',h.honseki),pr('その時の筆頭者',h.hittousha),pr('詳細',h.detail)])});}if((d.basicFree||[]).length){body+=`<p style="font-weight:bold;margin:8pt 0 3pt">その他</p>`;d.basicFree.forEach(f=>{body+=tbl([pr(f.label,f.value)]);});}}
+  if(keys.includes('family')){body+=h2('家族・連絡先');(d.family||[]).forEach(f=>{body+=`<p style="font-weight:bold;margin:7pt 0 3pt">${f.name||'（氏名未入力）'}（${f.rel||''}）</p>`+tbl([pr('生年月日',f.birth),pr('電話',f.tel),pr('メール',f.email),pr('住所',f.addr),pr('メモ',f.note)]);});if((d.contacts||[]).length){body+=`<p style="font-weight:bold;margin:9pt 0 4pt">その他の連絡先</p>`;d.contacts.forEach(c=>{body+=`<p style="margin:6pt 0 2pt;font-size:10pt;font-weight:bold">${c.name||''}（${c.role||''}）</p>`+tbl([pr('電話',c.tel),pr('メール',c.email),pr('住所',c.addr),...(c.freeItems||[]).map(f=>pr(f.label,f.value))]);});}}
+  if(keys.includes('assets')){body+=h2('財産・資産');if((d.realEstate||[]).length){body+=`<p style="font-weight:bold;margin:8pt 0 3pt">不動産</p>`;d.realEstate.forEach(r=>{body+=tbl([pr('種類',r.type),pr('所在地',r.addr),pr('面積',r.area),pr('メモ',r.note)])});}if((d.securities||[]).length){body+=`<p style="font-weight:bold;margin:8pt 0 3pt">証券口座</p>`;d.securities.forEach(s=>{body+=tbl([pr('証券会社',s.co),pr('口座種別',s.type),pr('口座番号',s.num),pr('ログインID',s.netId),pr('ログインPW',s.netPw),pr('保有商品',s.note)])});}if((d.loans||[]).length){body+=`<p style="font-weight:bold;margin:8pt 0 3pt">ローン・負債</p>`;d.loans.forEach(l=>{body+=tbl([pr('種類',l.type),pr('借入先',l.lender),pr('残高',l.balance),pr('月々の返済額',l.monthly),pr('完済予定',l.endDate),pr('メモ',l.note)])});}if((d.insurance||[]).length){body+=`<p style="font-weight:bold;margin:8pt 0 3pt">保険</p>`;d.insurance.forEach(r=>{body+=tbl([pr('保険会社',r.co),pr('種類',r.type),pr('証券番号',r.num),pr('保障額',r.coverage),pr('月額掛金',r.premium),pr('支払方法',r.payMethod),pr('受取人',r.beneficiary),pr('連絡先',r.contact)])});}body+=tbl([pr('貴重品の場所',(d.assets||{}).valuables)]);}
+  if(keys.includes('banks')){body+=h2('口座・カード・サブスク')+`<p style="font-size:9pt;color:#c00;margin-bottom:5pt">⚠️ 機密情報 — 取り扱いに十分ご注意ください</p>`;if((d.banks||[]).length){body+=`<p style="font-weight:bold;margin:7pt 0 3pt">銀行口座</p>`;d.banks.forEach(b=>{body+=tbl([pr('銀行名',b.bank),pr('支店名',b.branch),pr('口座種別',b.type),pr('口座番号',b.num),pr('キャッシュカード番号',b.cardNum),pr('カードPIN',b.pin),pr('ネット銀行ID',b.netId),pr('ネット銀行PW',b.netPw),pr('メモ',b.note)])});}if((d.cards||[]).length){body+=`<p style="font-weight:bold;margin:7pt 0 3pt">クレジットカード</p>`;d.cards.forEach(c=>{body+=tbl([pr('カード名',c.name),pr('カード番号',c.num),pr('有効期限',c.exp),pr('暗証番号',c.pin),pr('メモ',c.note)])});}if((d.subs||[]).length){body+=`<p style="font-weight:bold;margin:7pt 0 3pt">サブスクリプション</p>`;d.subs.forEach(s=>{body+=tbl([pr('サービス名',s.name),pr('月額',s.fee),pr('ログインID',s.id),pr('パスワード',s.pw),pr('メモ',s.note)]);});}}
+  if(keys.includes('sns')){body+=h2('SNS・オンラインアカウント')+`<p style="font-size:9pt;color:#c00;margin-bottom:5pt">⚠️ 機密情報</p>`;(d.sns||[]).forEach(s=>{body+=tbl([pr('サービス',s.service),pr('ユーザー名/ID',s.id),pr('パスワード',s.pw),pr('死後の対応希望',s.afterDeath),pr('メモ',s.note)]);});}
+  if(keys.includes('medical')){const m=d.medical||{};body+=h2('医療・介護・保険情報');body+=`<p style="font-weight:bold;margin:6pt 0 3pt">保険・手帳情報</p>`+tbl([pr('健康保険の種類',m.hokenType),pr('保険者名',m.hokenSha),pr('被保険者番号',m.hokenNum),pr('保険証の場所',m.hokenPlace),pr('介護保険証',m.kaigoHoken),pr('介護度',m.kaigoLevel),pr('ケアマネージャー',m.careManager),pr('障害者手帳',m.shougai),pr('等級',m.shougaiLevel),pr('その他の証明書',m.othercert)]);body+=`<p style="font-weight:bold;margin:6pt 0 3pt">かかりつけ医</p>`+tbl([pr('かかりつけ医',m.doctor),pr('電話番号',m.doctorTel),pr('持病・常用薬',m.disease),pr('アレルギー',m.allergy)]);body+=`<p style="font-weight:bold;margin:6pt 0 3pt">医療・介護の希望</p>`+tbl([pr('延命治療',m.enmeichi),pr('臓器提供',m.organ),pr('詳細',m.medDetail),pr('介護の場所',m.carePlace),pr('介護の希望',m.care)]);}
+  if(keys.includes('funeral')){const f=d.funeral||{};body+=h2('葬儀・お墓の希望')+tbl([pr('葬儀の形式',f.type),pr('宗派・宗教',f.religion),pr('お寺・教会',f.temple),pr('葬儀社',f.funeralCo),pr('参列者の希望',f.guest),pr('その他',f.note),pr('お墓の希望',f.grave),pr('お墓の場所',f.graveAddr),pr('納骨メモ',f.graveNote)]);}
+  if(keys.includes('messages')){const ms=d.messages||{};body+=h2('メッセージ・遺言');(ms.msgs||[]).forEach(m=>{if(!m.to&&!m.msg)return;body+=`<div style="border:1pt solid #ccc;border-radius:3pt;padding:8pt;margin-bottom:8pt"><p style="font-weight:bold;margin-bottom:5pt">${m.to||'（宛先なし）'}へ</p><p style="line-height:1.8;white-space:pre-wrap">${m.msg||''}</p></div>`;});body+=tbl([pr('遺産分配の希望',ms.inheritance),pr('形見分け',ms.keepsake),pr('デジタルデータ',ms.digital)]);}
+  return`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>エンディングノート</title><style>body{font-family:'Hiragino Sans','Meiryo',sans-serif;padding:18pt 28pt;color:#000}@page{margin:12mm}h2{page-break-after:avoid}tr{page-break-inside:avoid}.footer{position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:7.5pt;color:#aaa;border-top:0.5pt solid #ddd;padding:4pt 0}</style></head><body>${body}<div class="footer">© ${new Date().getFullYear()} アスイロ・ラボ　All Rights Reserved.　無断転載・二次配布禁止　／　ASUIRO LAB - デジタルエンディングノート</div></body></html>`;
+}
+
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');
+  t.style.display='block';setTimeout(()=>t.style.display='none',2500);
+}
+</script>
+</body>
+</html>

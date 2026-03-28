@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>デジタルエンディングノート 無料モニター募集｜nagomi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#faf5ef;color:#3a2a1e;line-height:1.8;font-size:16px}
+.wrap{max-width:680px;margin:0 auto;padding:0 20px 80px}
+.hero{background:#4a3728;color:#f5ede3;text-align:center;padding:48px 24px 40px}
+.hero .brand{font-size:11px;letter-spacing:3px;color:#c4a882;margin-bottom:12px}
+.hero .badge{display:inline-block;background:#c4a882;color:#4a3728;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:0.08em;margin-bottom:16px}
+.hero h1{font-size:26px;font-weight:700;line-height:1.5;margin-bottom:14px;color:#f5ede3}
+.hero h1 span{color:#c4a882}
+.hero p{font-size:14px;color:rgba(245,237,227,0.8);line-height:1.9;margin-bottom:20px}
+.hero-meta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.hero-meta span{font-size:12px;color:#c4a882}
+section{margin-bottom:40px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:0.12em;color:#8a7060;margin-bottom:10px}
+h2{font-size:20px;font-weight:700;color:#4a3728;margin-bottom:16px;line-height:1.5}
+p{font-size:14px;color:#5a4a3e;line-height:1.9;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+.card{background:#fff;border:1px solid #d4b896;border-radius:12px;padding:20px 22px;margin-bottom:12px}
+.story{background:#f5ede3;border-left:3px solid #c4a882;border-radius:0 10px 10px 0;padding:20px 22px;margin-bottom:12px}
+.story p{color:#4a3728}
+
+/* メリデメ */
+.merit-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:480px){.merit-wrap{grid-template-columns:1fr}}
+.merit-box{border-radius:10px;padding:16px 18px}
+.merit-box.paper{background:#f5ede3;border:1px solid #d4b896}
+.merit-box.digital{background:#fff;border:1px solid #d4b896}
+.merit-box .m-title{font-size:13px;font-weight:700;color:#4a3728;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.merit-box ul{padding-left:16px;font-size:13px;line-height:2.1;color:#5a4a3e}
+.merit-demerit-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:480px){.merit-demerit-wrap{grid-template-columns:1fr}}
+.md-box{border-radius:10px;padding:14px 18px}
+.md-box.good{background:#f5ede3;border:1px solid #d4b896}
+.md-box.bad{background:#faf5ef;border:1px solid #e8d8c4}
+.md-box .md-title{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.md-box.good .md-title{color:#4a3728}
+.md-box.bad .md-title{color:#8a7060}
+.md-box ul{padding-left:16px;font-size:13px;line-height:2;color:#5a4a3e}
+.summary-box{background:#4a3728;border-radius:10px;padding:16px 20px;margin-top:4px}
+.summary-box p{font-size:13px;color:#f5ede3;margin:0;line-height:1.9}
+.summary-box p span{color:#c4a882;font-weight:700}
+
+/* 機能 */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.feat-grid{grid-template-columns:1fr}}
+.feat-item{background:#fff;border:1px solid #d4b896;border-radius:10px;padding:14px 16px}
+.feat-item .feat-title{font-size:13px;font-weight:700;color:#4a3728;margin-bottom:4px}
+.feat-item .feat-desc{font-size:12px;color:#8a7060;line-height:1.7}
+
+/* 安全性 */
+.security-list{list-style:none;padding:0}
+.security-list li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #eadac8;font-size:13px;color:#5a4a3e;line-height:1.7}
+.security-list li:last-child{border-bottom:none}
+.s-icon{width:28px;height:28px;border-radius:8px;background:#f5ede3;border:1px solid #d4b896;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+
+/* ステップ */
+.steps{list-style:none;padding:0}
+.step-item{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:#4a3728;color:#f5ede3;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-body strong{display:block;font-size:14px;font-weight:700;color:#4a3728;margin-bottom:2px}
+.step-body span{font-size:13px;color:#8a7060}
+
+/* 特典 */
+.tokuten{background:#4a3728;border-radius:12px;padding:22px 24px;margin-bottom:12px}
+.tokuten .t-title{font-size:13px;font-weight:700;color:#c4a882;margin-bottom:12px;letter-spacing:0.05em}
+.tokuten ul{list-style:none;padding:0}
+.tokuten ul li{font-size:14px;color:#f5ede3;padding:6px 0;border-bottom:1px solid rgba(196,168,130,0.2);display:flex;align-items:flex-start;gap:8px;line-height:1.7}
+.tokuten ul li:last-child{border-bottom:none}
+.tokuten ul li::before{content:'';width:6px;height:6px;border-radius:50%;background:#c4a882;flex-shrink:0;margin-top:8px}
+
+/* フィードバック */
+.fb-box{background:#fff;border:1.5px solid #c4a882;border-radius:12px;padding:20px 22px}
+.fb-box .fb-title{font-size:14px;font-weight:700;color:#4a3728;margin-bottom:10px}
+.fb-box ul{padding-left:18px;font-size:13px;color:#5a4a3e;line-height:2.1}
+
+/* CTA */
+.cta-wrap{text-align:center;padding:32px 24px;background:#4a3728;border-radius:14px}
+.cta-badge{display:inline-block;background:rgba(196,168,130,0.2);border:1px solid #c4a882;color:#c4a882;font-size:11px;padding:4px 14px;border-radius:20px;margin-bottom:14px;letter-spacing:0.08em}
+.cta-title{font-size:18px;font-weight:700;color:#f5ede3;margin-bottom:8px;line-height:1.5}
+.cta-sub{font-size:13px;color:rgba(245,237,227,0.7);margin-bottom:20px}
+.cta-btn{display:inline-block;padding:16px 40px;background:#c4a882;color:#4a3728;font-size:15px;font-weight:700;border-radius:100px;text-decoration:none;letter-spacing:0.05em}
+.cta-note{font-size:11px;color:rgba(245,237,227,0.5);margin-top:12px}
+.note-box{background:#faf0e6;border:1px solid #e8d8c4;border-radius:10px;padding:14px 18px;margin-top:12px}
+.note-box p{font-size:12px;color:#8a7060;margin:0;line-height:1.8}
+.divider{border:none;border-top:1px solid #e8d8c4;margin:32px 0}
+footer{text-align:center;padding:20px;font-size:11px;color:#b09880;border-top:1px solid #e8d8c4;margin-top:40px}
+footer span{color:#8a7060;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="brand">ASUIRO LAB × nagomi</p>
+  <div class="badge">無料モニター募集｜先着10名・5月31日まで</div>
+  <h1>大切な情報を、<span>安全に</span>残す。<br>デジタルエンディングノート</h1>
+  <p>スマホのパスワードから、保険・口座・SNSまで。<br>もしもの時に家族が困らないよう、<br>暗号化して安全に整理できるデジタルツールです。</p>
+  <div class="hero-meta">
+    <span>🔒 AES-256暗号化</span>
+    <span>📱 ブラウザで動作・インストール不要</span>
+    <span>☁️ サーバー非送信</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 誕生のきっかけ -->
+  <section style="margin-top:36px">
+    <div class="section-label">STORY</div>
+    <h2>デジタルエンディングノートが生まれたきっかけ</h2>
+    <div class="story">
+<p>　エンディングノートに興味を持ってくださり、ありがとうございます！<br>
+　わたしは長く行政職員として、福祉の現場でも働いてきました。その中で、孤独死など身寄りのない方の埋葬の手続きにも携わった経験があります。<br>　事前の準備さえあれば防げたり、疎遠となったご家族を探し出して連絡を取ったり、たくさんの人生の最期に触れてきました。<br>
+　そんなわたしですが、じつは50歳の時にがんの告知を受けました。<br>　日頃から事前の準備の大切さを嫌というほど感じていながら、いざ診断を受けた時点で、何も準備できていなかったんです。<br>まさか自分が？という気持ちや、まだ50歳、未来なんてこの先まだまだあるものだと過信していました。<br>
+　でも、昨日と同じ変わらない毎日が、明日もやってくる保証なんてどこにもない。<br>　きっとわたしが仕事で関わってきた多くの人も、自分の身に起こることをどこまで想像できていただろう…言うは易し行うは難しを痛感しました。<br>　問題意識を持っている自分自身ですら「やろうと思っても面倒で後回しにしていた」わけですから。<br>
+<b>それなら、もっと気軽に取り組めて、使いやすい便利なものをつくってしまえ！</b><br>
+　そして完成したのがこの「デジタルエンディングノート」です。※β版<br>　「もし事故や病気で自分の意識がなくなったとき、家族は何もわからないまま」という事態を避けるために「エンディングノート」の存在は欠かせません。<br>　銀行口座、医療保険、あらゆる契約のパスワード、SNSやサブスクの状況…必要な情報をすべてを管理できるツールを用意しました。<br>　終活の相談の中でも、「準備しておきたいけど、どうしたらいいかわからない」、「ひとりでは難しい」…そんな声をたくさん聞いてきました。<br>　だから、極力簡単に直感的に使えるようにしています。PCやスマホで文字が入力できるなら大丈夫なレベルまで落とし込んでいます。</p><p>　まずは、一度使ってみて欲しい。難しいことは考えずに、ブラウザで開いて、入力するだけ！セキュリティも安全です。</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- メリデメ -->
+  <section>
+    <div class="section-label">PAPER vs DIGITAL</div>
+    <h2>紙とデジタル、どちらがいい？</h2>
+    <p>どちらにも良さがあります。それぞれのメリット・デメリットを整理してみましょう。</p>
+    <div class="merit-wrap">
+      <div class="merit-box paper">
+        <p class="m-title">📄 紙のメリット</p>
+        <ul>
+          <li>端末やパスワードが不要</li>
+          <li>家族が誰でも読める</li>
+          <li>電源・機器トラブルに強い</li>
+          <li>手書きの温かみがある</li>
+          <li>直感的に書き始められる</li>
+        </ul>
+      </div>
+      <div class="merit-box digital">
+        <p class="m-title">💻 デジタルのメリット</p>
+        <ul>
+          <li>何度でも書き直せる</li>
+          <li>パスワードも安全に保管できる</li>
+          <li>バックアップが簡単</li>
+          <li>PDF印刷で紙にもできる</li>
+          <li>情報量に制限がない</li>
+        </ul>
+      </div>
+      <div class="md-box bad" style="border-radius:10px;padding:14px 18px;background:#f5ede3;border:1px solid #d4b896;">
+        <p class="md-title" style="font-size:13px;font-weight:700;color:#4a3728;margin-bottom:8px;display:flex;align-items:center;gap:6px;">⚠️ 紙のデメリット</p>
+        <ul style="padding-left:16px;font-size:13px;line-height:2;color:#5a4a3e;">
+          <li>書き直すたびに作り直しが必要</li>
+          <li>パスワードなどを書くとリスクがある</li>
+          <li>紛失・破損のリスクがある</li>
+          <li>情報が増えると管理が煩雑になる</li>
+        </ul>
+      </div>
+      <div class="md-box bad" style="border-radius:10px;padding:14px 18px;background:#faf5ef;border:1px solid #e8d8c4;">
+        <p class="md-title" style="font-size:13px;font-weight:700;color:#8a7060;margin-bottom:8px;display:flex;align-items:center;gap:6px;">⚠️ デジタルのデメリット<br><span style="font-size:11px;color:#c4a882;font-weight:700;">→ すべて対策できます</span></p>
+        <ul style="padding-left:16px;font-size:13px;line-height:2;color:#5a4a3e;">
+          <li>PW忘れ → 紙に書いて一緒に保管</li>
+          <li>端末故障 → エクスポートで対策</li>
+          <li>家族が開けない → 同梱ガイドで解決</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <p>50代以下の若い世代はまだ仕事・家族・健康など、生活環境の振り幅が大きい時期。<br>住所・家族構成・資産状況が変わるたびに書き直せる<span>デジタルの柔軟さ</span>は、この世代こそ向いています。<br>デメリットはすべて対策できるので、「まず動いてみる」ための入口として、デジタルエンディングノートに取り組んでみるのもひとつの方法です。</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 書けること -->
+  <section>
+    <div class="section-label">CONTENTS</div>
+    <h2>このノートに書けること</h2>
+    <div class="feat-grid">
+      <div class="feat-item">
+        <p class="feat-title">👤 基本情報・戸籍</p>
+        <p class="feat-desc">氏名・住所・本籍・戸籍履歴など相続手続きに必要な情報を整理</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">👨‍👩‍👧 家族・連絡先</p>
+        <p class="feat-desc">緊急連絡先・専門家・ケアマネなど関係者を一覧管理</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">🏦 財産・保険</p>
+        <p class="feat-desc">不動産・証券・ローン・保険を網羅。相続時の漏れを防ぐ</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">💳 口座・カード・サブスク</p>
+        <p class="feat-desc">死亡後の引き落とし防止に。暗号化して安全に保管</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">📱 SNS・アカウント</p>
+        <p class="feat-desc">削除・追悼設定など死後の対応希望も記録できる</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">🏥 医療・介護の希望</p>
+        <p class="feat-desc">延命治療・臓器提供・かかりつけ医などを明記しておく</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">⛩️ 葬儀・お墓</p>
+        <p class="feat-desc">家族葬・散骨など希望を残しておくことで家族の負担を減らす</p>
+      </div>
+      <div class="feat-item">
+        <p class="feat-title">💌 大切な人へのメッセージ</p>
+        <p class="feat-desc">大切な人への言葉を残す。何度でも書き直せる</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 安全性 -->
+  <section>
+    <div class="section-label">SECURITY</div>
+    <h2>安全性について</h2>
+    <div class="card">
+      <ul class="security-list">
+        <li>
+          <span class="s-icon">🔒</span>
+          <div><strong style="display:block;font-size:13px;font-weight:700;color:#4a3728;margin-bottom:2px">AES-256暗号化</strong>銀行・政府機関でも使われる世界標準の暗号化方式。マスターパスワードなしでは内容を読み取れません。</div>
+        </li>
+        <li>
+          <span class="s-icon">📵</span>
+          <div><strong style="display:block;font-size:13px;font-weight:700;color:#4a3728;margin-bottom:2px">サーバー非送信</strong>入力したデータはインターネット上に送信されません。すべてあなたの端末の中だけに保存されます。</div>
+        </li>
+        <li>
+          <span class="s-icon">📤</span>
+          <div><strong style="display:block;font-size:13px;font-weight:700;color:#4a3728;margin-bottom:2px">エクスポートでバックアップ</strong>暗号化されたファイルをUSBやクラウドに保存できます。端末が壊れてもデータを復元できます。</div>
+        </li>
+        <li>
+          <span class="s-icon">⏱️</span>
+          <div><strong style="display:block;font-size:13px;font-weight:700;color:#4a3728;margin-bottom:2px">自動ロック機能</strong>10分間操作がないと自動でロックがかかります。その場を離れる時も安心です。</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 使い方 -->
+  <section>
+    <div class="section-label">HOW TO USE</div>
+    <h2>使い方の流れ</h2>
+    <div class="card">
+      <ul class="steps">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>ツールとガイドを受け取る</strong><span>申し込み後、エンディングノートと使い方ガイドがダウンロードできます</span></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>マスターパスワードを設定して開く</strong><span>インストール不要。HTMLファイルをダブルクリックしてブラウザで開くだけ</span></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>わかるところから少しずつ入力する</strong><span>一度に全部入力しなくてOK。気になるところや優先度の高いものから</span></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body"><strong>こまめに保存・バックアップ</strong><span>「保存」ボタンでブラウザに保存。「エクスポート」でUSBやクラウドにバックアップも◯</span></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body"><strong>1ヶ月間：とりあえず使ってみる</strong><span>使い方でわからないことがあればLINEで質問OK</span></div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body"><strong>1ヶ月後：アンケートでフィードバックを</strong><span>Googleフォームで使い心地をお聞かせください。ツール改善に活かします</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- モニター特典 -->
+  <section>
+    <div class="section-label">MONITOR BENEFIT</div>
+    <h2>モニター限定の特典</h2>
+    <div class="tokuten">
+      <p class="t-title">先着10名限定でお届けするもの</p>
+      <ul>
+        <li>デジタルエンディングノート本体（HTMLファイル）</li>
+        <li>丁寧な使い方ガイド（印刷してご家族に渡せます）</li>
+        <li>使い方の質問があればモニター期間中いつでもLINEで受け付けます</li>
+        <li>正式リリース時の最優先案内</li>
+        <li>有料版リリース時のモニター特別価格でのご提供</li>
+      </ul>
+    </div>
+    <div class="note-box">
+      <p>モニター期間終了後、いただいたフィードバックをもとにツールを改善し、正式版としてリリースする予定です。モニターの方には有料版リリース時に特別価格でご案内します。</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- フィードバック -->
+  <section>
+    <div class="section-label">YOUR VOICE</div>
+    <h2>お願いしたいこと</h2>
+    <div class="fb-box">
+      <p class="fb-title">1ヶ月後に、Googleフォームで感想を教えてください</p>
+      <ul>
+        <li>実際に使ってみてどうでしたか？（率直な感想）</li>
+        <li>使いにくかった点・わかりにくかった点</li>
+        <li>こんな機能があったらいいな、と思ったこと</li>
+        <li>どんな人に勧めたいと思いますか？</li>
+      </ul>
+    </div>
+    <p style="margin-top:12px;font-size:13px;color:#8a7060">フォームへのリンクは1ヶ月後にお送りします。気づいたことを気軽に教えてもらえると嬉しいです。</p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <div class="cta-badge">先着10名・5月31日まで・無料</div>
+    <p class="cta-title">まずは試してみませんか？</p>
+    <p class="cta-sub">申し込みフォームに進み、LINEの表示名と同意確認を送信すると<br>ダウンロードリンクが表示されます</p>
+
+    <div style="background:rgba(196,168,130,0.15);border:1px solid rgba(196,168,130,0.4);border-radius:10px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="text-align:left">
+        <p style="font-size:11px;color:rgba(245,237,227,0.6);margin:0 0 2px">現在の受付状況</p>
+        <p style="font-size:22px;font-weight:700;color:#c4a882;margin:0;line-height:1.2">残り <span style="font-size:32px">10</span> 名</p>
+      </div>
+      <div style="text-align:right">
+        <p style="font-size:11px;color:rgba(245,237,227,0.6);margin:0 0 2px">受付期限</p>
+        <p style="font-size:15px;font-weight:700;color:#f5ede3;margin:0">2025年5月31日まで</p>
+      </div>
+    </div>
+
+    <a href="https://forms.gle/xWMzYxnagrk32uSu5" class="cta-btn">無料モニターに申し込む</a>
+    <p class="cta-note">※ 表示人数は実際の残数とタイムラグが生じる場合があります。<br>定員に達した場合はフォームを閉鎖しますが、タイミングによっては申し込みができないことがあります。あらかじめご了承ください。</p>
+  </div>
+
+</div>
+
+<footer>
+  <span>ASUIRO LAB × nagomi</span>　デジタルエンディングノート モニター募集<br>
+  © 2025 アスイロ・ラボ　All Rights Reserved.
+</footer>
+
+</body>
+</html>
